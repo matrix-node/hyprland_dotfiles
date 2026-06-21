@@ -1,0 +1,23 @@
+# Generated Matugen files
+config/hypr/colors.lua
+config/waybar/colors.css
+config/nvim/lua/generated/matugen.lua
+
+# Caches
+.cache/
+*.cache
+
+# Logs
+*.log
+
+# Secrets / local-only files
+.env
+*.key
+*.pem
+id_rsa
+id_ed25519
+
+# Editor junk
+*.swp
+*.swo
+.DS_Store
