@@ -1,33 +1,25 @@
-# 🏔️ Hyprland Dotfiles — matrix-node
+# Hyprland Dotfiles — matrix-node
 
 A fully themed Arch Linux Hyprland rice powered by [matugen](https://github.com/InioX/matugen) for automatic Material You color generation.
 
-![Screenshot](https://img.shields.io/badge/DE-Hyprland-ffb694?style=flat-square)
 ![OS](https://img.shields.io/badge/OS-Arch_Linux-1793d1?style=flat-square)
 ![Shell](https://img.shields.io/badge/Shell-Zsh-f1dfd8?style=flat-square)
 
----
+![Preview](preview.png)
 
-## ✨ Features
+## Features
 
-- **Material You theming** — colors auto-generate from your wallpaper via `matugen`
+- **Material You theming** — colors auto-generate from your wallpaper via matugen
 - **Hyprlock** — blur lock screen with time, date, and keyboard layout indicator
 - **Wlogout** — glass-morphism logout menu with SVG icons and blurred background
 - **Waybar** — status bar with workspaces, system tray, clock, and more
 - **Rofi** — app launcher, WiFi menu, and Bluetooth selector all themed with matugen
 - **Cava** — terminal audio visualizer with gradient colors
 - **GTK4 + GTK3 + Qt5 + Qt6** — all themed consistently
-- **Notifications** — SwayNC with matugen colors
+- **Neovim** — custom colorscheme generated from wallpaper
+- **Firefox & Brave** — themed browser chrome via userChrome.css and GTK integration
 
-## 🖼️ Preview
-
-| Lock Screen | Logout Menu | App Launcher |
-|---|---|---|
-| `Super + L` → hyprlock | `Super + Shift + L` → wlogout | `Super + D` → rofi |
-
----
-
-## 🚀 Quick Install
+## Quick Install
 
 ### 1. Clone the repo
 
@@ -39,11 +31,8 @@ cd ~/hyprland_dotfiles
 ### 2. Run the installer
 
 ```bash
-# Interactive (recommended for first run)
-./install.sh
-
-# Or fully automatic
-./install.sh --yes
+./install.sh          # interactive
+./install.sh --yes    # fully automatic
 ```
 
 The installer will:
@@ -52,7 +41,7 @@ The installer will:
 - Set up wallpaper pipeline scripts
 - Enable necessary systemd services
 
-### 3. Reboot & enjoy
+### 3. Reboot
 
 ```bash
 reboot
@@ -60,21 +49,19 @@ reboot
 
 Select **Hyprland** from your display manager.
 
----
-
-## 📦 What gets installed
+## What gets installed
 
 ### Official packages
-`hyprland` `hyprlock` `hypridle` `waybar` `wlogout` `rofi` `matugen` `swaync` `waypaper` `kitty` `ghostty` `neovim` `btop` `fastfetch` `starship` `pipewire` `wireplumber` `ttf-jetbrains-mono-nerd` `ttf-nerd-fonts-symbols` and more.
+
+`hyprland` `hyprlock` `hypridle` `waybar` `rofi` `matugen` `swaync` `kitty` `ghostty` `neovim` `btop` `fastfetch` `starship` `pipewire` `wireplumber` `ttf-jetbrains-mono-nerd` `ttf-nerd-fonts-symbols`
 
 ### AUR packages
-`bibata-cursor-theme` `brave-origin-nightly-bin` `quickshell` `awww` `rofi-wifi-menu-git` and more.
 
----
+`bibata-cursor-theme` `brave-origin-nightly-bin` `waypaper-git` `awww` `quickshell` `wlogout` `rofi-wifi-menu-git` `grimblast` `ttf-nerd-fonts-meta`
 
-## 🎨 Changing the wallpaper
+## Changing the wallpaper
 
-1. Run `Super + W` or execute `set-wallpaper`
+1. Press `Super + W` or run `set-wallpaper`
 2. Pick an image in the waypaper GUI
 3. Colors auto-apply across all apps via matugen
 
@@ -83,9 +70,7 @@ Or manually:
 matugen-apply-colors ~/Pictures/Wallpapers/your-image.jpg
 ```
 
----
-
-## 🧭 Keybindings
+## Keybindings
 
 | Key | Action |
 |---|---|
@@ -105,56 +90,57 @@ matugen-apply-colors ~/Pictures/Wallpapers/your-image.jpg
 | `Print` | Screenshot area |
 | `Super + Print` | Screenshot output |
 
----
-
-## 📁 Structure
+## Structure
 
 ```
 hyprland_dotfiles/
-├── install.sh           # Bootstrap installer
-├── packages.txt         # Official packages
-├── packages-aur.txt     # AUR packages
+├── install.sh            # Bootstrap installer
+├── packages.txt          # Official packages
+├── packages-aur.txt      # AUR packages
+├── preview.png           # Screenshot
 ├── config/
-│   ├── hypr/            # Hyprland, hyprlock, hypridle configs
-│   ├── wlogout/         # Logout menu
-│   ├── waybar/          # Status bar
-│   ├── rofi/            # App launcher & menus
-│   ├── cava/            # Audio visualizer
-│   ├── gtk-3.0/         # GTK3 theme
-│   ├── gtk-4.0/         # GTK4 theme
-│   ├── qt5ct/           # Qt5 appearance
-│   ├── qt6ct/           # Qt6 appearance
-│   ├── matugen/         # Matugen templates & config
-│   ├── waypaper/        # Wallpaper manager
-│   ├── kitty/           # Kitty terminal
-│   ├── ghostty/         # Ghostty terminal
-│   ├── btop/            # System monitor
-│   ├── swaync/          # Notifications
-│   ├── nvim/            # Neovim config
-│   ├── fastfetch/       # System fetch
-│   ├── starship.toml    # Prompt
-│   └── autostart/       # Desktop autostart
+│   ├── hypr/             # Hyprland, hyprlock, hypridle configs
+│   ├── wlogout/          # Logout menu
+│   ├── waybar/           # Status bar
+│   ├── rofi/             # App launcher and menus
+│   ├── cava/             # Audio visualizer
+│   ├── gtk-3.0/          # GTK3 theme
+│   ├── gtk-4.0/          # GTK4 theme
+│   ├── qt5ct/            # Qt5 appearance
+│   ├── qt6ct/            # Qt6 appearance
+│   ├── matugen/          # Matugen templates and config
+│   ├── waypaper/         # Wallpaper manager
+│   ├── kitty/            # Kitty terminal
+│   ├── ghostty/          # Ghostty terminal
+│   ├── btop/             # System monitor
+│   ├── swaync/           # Notifications
+│   ├── nvim/             # Neovim config
+│   ├── fastfetch/        # System fetch
+│   ├── starship.toml     # Prompt
+│   └── autostart/        # Desktop autostart
 ├── home/
-│   ├── .zshrc           # Zsh config
-│   └── .bashrc          # Bash fallback
-├── bin/                 # ~/.local/bin scripts
+│   ├── .zshrc            # Zsh config
+│   └── .bashrc           # Bash fallback
+├── bin/                  # ~/.local/bin scripts
 │   ├── matugen-apply-colors
 │   ├── generate-wlogout-blur
 │   ├── restore-wallpaper
 │   └── set-wallpaper
-└── wallpapers/          # (optional) wallpaper collection
+└── browsers/
+    ├── firefox-user.js
+    ├── firefox-userChrome.css
+    ├── firefox-userContent.css
+    └── brave-flags.conf
 ```
 
----
-
-## 🛠️ Manual setup (if not using installer)
+## Manual setup (without installer)
 
 ```bash
-# 1. Install packages
+# Install packages
 sudo pacman -S --needed - < packages.txt
 yay -S --needed - < packages-aur.txt
 
-# 2. Symlink configs
+# Symlink configs
 for dir in config/*/; do
     ln -sf "$PWD/$dir" "$HOME/.config/$(basename $dir)"
 done
@@ -162,44 +148,35 @@ ln -sf "$PWD/config/starship.toml" "$HOME/.config/starship.toml"
 ln -sf "$PWD/home/.zshrc" "$HOME/.zshrc"
 ln -sf "$PWD/home/.bashrc" "$HOME/.bashrc"
 
-# 3. Scripts
+# Scripts
 mkdir -p "$HOME/.local/bin"
 for script in bin/*; do
     ln -sf "$PWD/$script" "$HOME/.local/bin/"
     chmod +x "$HOME/.local/bin/$(basename $script)"
 done
 
-# 4. Enable services
+# Enable services
 systemctl --user enable --now hyprpolkitagent hypridle
 ```
 
----
-
-## 💡 Tips
+## Tips
 
 - **GTK/Qt apps not themed?** Run `nwg-look` to apply the GTK theme, or check `qt6ct` for Qt settings.
 - **Hyprlock not working?** Make sure `hyprpolkitagent` is running: `systemctl --user status hyprpolkitagent`
 - **Wlogout slow?** The blurred wallpaper is pre-generated by matugen. Run `generate-wlogout-blur` manually if it's missing.
-- **Colors not updating?** After changing wallpaper, run `matugen-apply-colors ~/wallpaper.jpg` or just use the waypaper GUI.
+- **Colors not updating?** After changing wallpaper, run `matugen-apply-colors ~/wallpaper.jpg` or use the waypaper GUI.
 
----
+## Wallpapers
 
-## 📸 Wallpapers
+Place your wallpapers in `~/Pictures/Wallpapers/`. The `waypaper` config points there by default.
 
-Place your wallpapers in `~/Pictures/Wallpapers/`. The `waypaper` config points there by default.  
-A curated set can be found in the `wallpapers/` directory (optional).
-
----
-
-## 🤝 Credits
+## Credits
 
 - [Hyprland](https://hyprland.org/)
 - [Matugen](https://github.com/InioX/matugen)
 - [Adi1090x](https://github.com/adi1090x/rofi) — rofi type-2 style base
 - [ArtsyMacaw](https://github.com/ArtsyMacaw/wlogout) — wlogout
 
----
+## License
 
-## 📄 License
-
-MIT — feel free to use, modify, and share.
+MIT
