@@ -1,0 +1,115 @@
+/* ============================================================
+ * Firefox userChrome.css — Matugen Material You theme
+ * Auto-generated from your wallpaper colors
+ * ============================================================ */
+
+:root {
+  --matugen-bg: #1a120e !important;
+  --matugen-surface: #271e1a !important;
+  --matugen-surface-high: #322824 !important;
+  --matugen-primary: #ffb694 !important;
+  --matugen-on-primary: #542104 !important;
+  --matugen-primary-container: #703718 !important;
+  --matugen-text: #f1dfd8 !important;
+  --matugen-text-muted: #d7c2ba !important;
+  --matugen-border: #52443d !important;
+  --matugen-outline: #a08d85 !important;
+  --matugen-error: #ffb4ab !important;
+}
+
+#TabsToolbar {
+  background-color: var(--matugen-bg) !important;
+  color: var(--matugen-text) !important;
+}
+
+#tabbrowser-tabs {
+  background-color: var(--matugen-bg) !important;
+}
+
+.tabbrowser-tab {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text-muted) !important;
+}
+
+.tabbrowser-tab[selected="true"] {
+  background-color: var(--matugen-bg) !important;
+  color: var(--matugen-text) !important;
+}
+
+.tabbrowser-tab:hover {
+  background-color: var(--matugen-surface) !important;
+}
+
+#nav-bar {
+  background-color: var(--matugen-bg) !important;
+  border-bottom: 1px solid var(--matugen-border) !important;
+}
+
+#urlbar,
+#urlbar-background {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text) !important;
+  border: 1px solid var(--matugen-border) !important;
+  border-radius: 8px !important;
+}
+
+#urlbar[focused="true"],
+#urlbar-background[focused="true"] {
+  border-color: var(--matugen-primary) !important;
+}
+
+#urlbar-input {
+  color: var(--matugen-text) !important;
+}
+
+.urlbarView {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text) !important;
+  border: 1px solid var(--matugen-border) !important;
+}
+
+.urlbarView-row:hover {
+  background-color: var(--matugen-surface-high) !important;
+}
+
+#sidebar-box,
+#sidebar {
+  background-color: var(--matugen-bg) !important;
+  color: var(--matugen-text) !important;
+}
+
+#PersonalToolbar {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text) !important;
+}
+
+menupopup,
+panel {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text) !important;
+  border: 1px solid var(--matugen-border) !important;
+}
+
+menu:hover,
+menuitem:hover {
+  background-color: var(--matugen-surface-high) !important;
+}
+
+toolbarbutton {
+  color: var(--matugen-text-muted) !important;
+}
+
+toolbarbutton:hover {
+  color: var(--matugen-text) !important;
+}
+
+#FindToolbar {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text) !important;
+}
+
+#statuspanel-label {
+  background-color: var(--matugen-surface) !important;
+  color: var(--matugen-text-muted) !important;
+  border-color: var(--matugen-border) !important;
+}

@@ -65,7 +65,7 @@ ok "Arch Linux detected."
 echo ""
 info "Step 1/4 — Installing official packages..."
 if confirm "Install required packages via pacman?"; then
-    sudo pacman -S --needed --noconfirm - < "$REPO_DIR/packages.txt"
+    grep -v "^#" "$REPO_DIR/packages.txt" | grep -v "^$" | sudo pacman -S --needed --noconfirm -
     ok "Official packages installed."
 else
     warn "Skipping package installation."
@@ -104,7 +104,7 @@ fi
 
 if [ -n "$AUR_HELPER" ]; then
     if confirm "Install AUR packages via $AUR_HELPER?"; then
-        $AUR_HELPER -S --needed --noconfirm - < "$REPO_DIR/packages-aur.txt"
+        grep -v "^#" "$REPO_DIR/packages-aur.txt" | grep -v "^$" | $AUR_HELPER -S --needed --noconfirm -
         ok "AUR packages installed."
     else
         warn "Skipping AUR package installation."

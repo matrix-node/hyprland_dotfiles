@@ -1,4 +1,3 @@
-# === AUR packages ===
 bibata-cursor-theme
 brave-origin-nightly-bin
 spotify
@@ -10,3 +9,6 @@ waypaper-git
 awww
 quickshell
 rofi-wifi-menu-git
+wlogout
+grimblast
+ttf-nerd-fonts-meta

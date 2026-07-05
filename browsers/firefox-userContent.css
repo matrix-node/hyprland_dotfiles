@@ -1,0 +1,24 @@
+/* ============================================================
+ * Firefox userContent.css — Matugen theme for internal pages
+ * ============================================================ */
+
+@-moz-document url-prefix("about:"), url-prefix("chrome://") {
+  :root {
+    --matugen-bg: #1a120e;
+    --matugen-surface: #271e1a;
+    --matugen-primary: #ffb694;
+    --matugen-text: #f1dfd8;
+    --matugen-text-muted: #d7c2ba;
+  }
+
+  html, body {
+    background-color: var(--matugen-bg) !important;
+    color: var(--matugen-text) !important;
+  }
+
+  /* New tab page */
+  .search-wrapper, .search-handoff {
+    background-color: var(--matugen-surface) !important;
+    border-color: var(--matugen-primary) !important;
+  }
+}
