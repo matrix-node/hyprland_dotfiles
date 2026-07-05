@@ -48,21 +48,21 @@
     {
       "type": "packages",
       "key": "     󰏖 Packages",
-      "keyColor": "#f5ecb0"
+      "keyColor": "#703718"
     },
     {
       "type": "terminal",
       "key": "     󰞷 Terminal",
-      "keyColor": "#c6a8ed"
+      "keyColor": "#ffdbcc"
     },
     {
       "type": "wm",
       "key": "     󱂬 WM      ",
-      "keyColor": "#b4c8ed"
+      "keyColor": "#322824"
     },
     {
       "type": "custom",
-      "format": "   ╰───────────────────────────────────────╯"
+      "format": "   ╰───────────────────────────────────────╮"
     },
     "break",
     {
@@ -94,19 +94,19 @@
     {
       "type": "display",
       "key": "     󰹑 Display ",
-      "keyColor": "#f5ecb0",
+      "keyColor": "#703718",
       "format": "{width}x{height} @ {refresh-rate} Hz"
     },
     {
       "type": "command",
       "key": "      OS Age  ",
       "text": "birthd=$(stat -c %W /); echo $(( ( $(date +%s) - birthd ) / 86400 )) days",
-      "keyColor": "#c6a8ed"
+      "keyColor": "#ffdbcc"
     },
     {
       "type": "uptime",
       "key": "     󰅐 Uptime  ",
-      "keyColor": "#b4c8ed"
+      "keyColor": "#322824"
     },
     {
       "type": "custom",

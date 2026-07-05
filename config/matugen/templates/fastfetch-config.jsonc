@@ -10,8 +10,8 @@
       "right": 3
     },
     "color": {
-      "1": "#{{ colors.primary.default.hex }}",
-      "2": "#{{ colors.tertiary.default.hex }}"
+      "1": "{{ colors.primary.default.hex }}",
+      "2": "{{ colors.tertiary.default.hex }}"
     }
   },
   "display": {
@@ -32,33 +32,33 @@
     {
       "type": "os",
       "key": "     󰣇 OS      ",
-      "keyColor": "#{{ colors.primary.default.hex }}"
+      "keyColor": "{{ colors.primary.default.hex }}"
     },
     {
       "type": "host",
       "key": "      Device  ",
       "format": "{2}",
-      "keyColor": "#{{ colors.tertiary.default.hex }}"
+      "keyColor": "{{ colors.tertiary.default.hex }}"
     },
     {
       "type": "kernel",
       "key": "      Kernel  ",
-      "keyColor": "#{{ colors.secondary.default.hex }}"
+      "keyColor": "{{ colors.secondary.default.hex }}"
     },
     {
       "type": "packages",
       "key": "     󰏖 Packages",
-      "keyColor": "#{{ colors.primary_container.default.hex }}"
+      "keyColor": "{{ colors.primary_container.default.hex }}"
     },
     {
       "type": "terminal",
       "key": "     󰞷 Terminal",
-      "keyColor": "#{{ colors.on_primary_container.default.hex }}"
+      "keyColor": "{{ colors.on_primary_container.default.hex }}"
     },
     {
       "type": "wm",
       "key": "     󱂬 WM      ",
-      "keyColor": "#{{ colors.surface_container_high.default.hex }}"
+      "keyColor": "{{ colors.surface_container_high.default.hex }}"
     },
     {
       "type": "custom",
@@ -77,36 +77,36 @@
     {
       "type": "cpu",
       "key": "     󰻠 CPU     ",
-      "keyColor": "#{{ colors.primary.default.hex }}",
+      "keyColor": "{{ colors.primary.default.hex }}",
       "format": "{1}"
     },
     {
       "type": "gpu",
       "key": "     󰢮 GPU     ",
-      "keyColor": "#{{ colors.tertiary.default.hex }}",
+      "keyColor": "{{ colors.tertiary.default.hex }}",
       "format": "{2}"
     },
     {
       "type": "memory",
       "key": "     󰍛 Memory  ",
-      "keyColor": "#{{ colors.secondary.default.hex }}"
+      "keyColor": "{{ colors.secondary.default.hex }}"
     },
     {
       "type": "display",
       "key": "     󰹑 Display ",
-      "keyColor": "#{{ colors.primary_container.default.hex }}",
+      "keyColor": "{{ colors.primary_container.default.hex }}",
       "format": "{width}x{height} @ {refresh-rate} Hz"
     },
     {
       "type": "command",
       "key": "      OS Age  ",
       "text": "birthd=$(stat -c %W /); echo $(( ( $(date +%s) - birthd ) / 86400 )) days",
-      "keyColor": "#{{ colors.on_primary_container.default.hex }}"
+      "keyColor": "{{ colors.on_primary_container.default.hex }}"
     },
     {
       "type": "uptime",
       "key": "     󰅐 Uptime  ",
-      "keyColor": "#{{ colors.surface_container_high.default.hex }}"
+      "keyColor": "{{ colors.surface_container_high.default.hex }}"
     },
     {
       "type": "custom",
