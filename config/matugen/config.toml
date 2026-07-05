@@ -70,3 +70,8 @@ output_path = "/home/matrix/.config/rofi/type-2/shared/colors.rasi"
 [templates.gtk4]
 input_path = "/home/matrix/.config/matugen/templates/gtk4-css.css"
 output_path = "/home/matrix/.config/gtk-4.0/gtk.css"
+
+# --- Fastfetch ---
+[templates.fastfetch]
+input_path = "/home/matrix/.config/matugen/templates/fastfetch-config.jsonc"
+output_path = "/home/matrix/.config/fastfetch/config.jsonc"

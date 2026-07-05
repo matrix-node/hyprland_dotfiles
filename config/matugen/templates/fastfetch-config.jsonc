@@ -10,8 +10,8 @@
       "right": 3
     },
     "color": {
-      "1": "#ffb694",
-      "2": "#d1c88f"
+      "1": "#{{ colors.primary.default.hex }}",
+      "2": "#{{ colors.tertiary.default.hex }}"
     }
   },
   "display": {
@@ -32,33 +32,33 @@
     {
       "type": "os",
       "key": "     󰣇 OS      ",
-      "keyColor": "#ffb694"
+      "keyColor": "#{{ colors.primary.default.hex }}"
     },
     {
       "type": "host",
       "key": "      Device  ",
       "format": "{2}",
-      "keyColor": "#d1c88f"
+      "keyColor": "#{{ colors.tertiary.default.hex }}"
     },
     {
       "type": "kernel",
       "key": "      Kernel  ",
-      "keyColor": "#e6bead"
+      "keyColor": "#{{ colors.secondary.default.hex }}"
     },
     {
       "type": "packages",
       "key": "     󰏖 Packages",
-      "keyColor": "#f5ecb0"
+      "keyColor": "#{{ colors.primary_container.default.hex }}"
     },
     {
       "type": "terminal",
       "key": "     󰞷 Terminal",
-      "keyColor": "#c6a8ed"
+      "keyColor": "#{{ colors.on_primary_container.default.hex }}"
     },
     {
       "type": "wm",
       "key": "     󱂬 WM      ",
-      "keyColor": "#b4c8ed"
+      "keyColor": "#{{ colors.surface_container_high.default.hex }}"
     },
     {
       "type": "custom",
@@ -77,36 +77,36 @@
     {
       "type": "cpu",
       "key": "     󰻠 CPU     ",
-      "keyColor": "#ffb694",
+      "keyColor": "#{{ colors.primary.default.hex }}",
       "format": "{1}"
     },
     {
       "type": "gpu",
       "key": "     󰢮 GPU     ",
-      "keyColor": "#d1c88f",
+      "keyColor": "#{{ colors.tertiary.default.hex }}",
       "format": "{2}"
     },
     {
       "type": "memory",
       "key": "     󰍛 Memory  ",
-      "keyColor": "#e6bead"
+      "keyColor": "#{{ colors.secondary.default.hex }}"
     },
     {
       "type": "display",
       "key": "     󰹑 Display ",
-      "keyColor": "#f5ecb0",
+      "keyColor": "#{{ colors.primary_container.default.hex }}",
       "format": "{width}x{height} @ {refresh-rate} Hz"
     },
     {
       "type": "command",
       "key": "      OS Age  ",
       "text": "birthd=$(stat -c %W /); echo $(( ( $(date +%s) - birthd ) / 86400 )) days",
-      "keyColor": "#c6a8ed"
+      "keyColor": "#{{ colors.on_primary_container.default.hex }}"
     },
     {
       "type": "uptime",
       "key": "     󰅐 Uptime  ",
-      "keyColor": "#b4c8ed"
+      "keyColor": "#{{ colors.surface_container_high.default.hex }}"
     },
     {
       "type": "custom",
