@@ -1,0 +1,13 @@
+{
+  "custom/music": {
+    "format": "{}",
+    "exec": "~/.config/waybar/scripts/music.sh",
+    "exec-if": "which playerctl",
+    "interval": 5,
+    "return-type": "json",
+    "tooltip": true,
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous"
+  }
+}

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Open wallpaper picker and apply colors via matugen
+
+set -euo pipefail
+
+# Launch waypaper GUI for wallpaper selection
+# waypaper's post_command will handle matugen color generation
+waypaper

@@ -1,0 +1,16 @@
+# Sensitive / generated
+*.zwc
+*.zst
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Don't track wallpaper files (too large)
+wallpapers/*.jpg
+wallpapers/*.png
+!wallpapers/README.md
+
+# Neovim plugin manager cache
+config/nvim/.cache/
+config/nvim/lazy-lock.json

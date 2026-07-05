@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Apply matugen colors from the current wallpaper
+# Called by waypaper post_command with $wallpaper
+
+set -euo pipefail
+
+run_quiet() {
+    timeout "$@" 2>/dev/null || true
+}
+
+wallpaper="${1:-}"
+
+# If no argument, read from cache
+if [ -z "$wallpaper" ]; then
+    if [ -f "$HOME/.cache/current-wallpaper" ]; then
+        wallpaper=$(cat "$HOME/.cache/current-wallpaper")
+    else
+        exit 0
+    fi
+fi
+
+# Validate the file exists
+[ -f "$wallpaper" ] || exit 0
+
+# Save to cache
+mkdir -p "$HOME/.cache"
+echo "$wallpaper" > "$HOME/.cache/current-wallpaper"
+
+# Run matugen to generate all templates.
+# --continue-on-error ensures all templates are attempted even if one fails.
+# Post-hooks in matugen config handle app reloads automatically.
+timeout 20s matugen image -c /home/matrix/.config/matugen/config.toml "$wallpaper" \
+    -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error || true
+
+# Notify user
+run_quiet 2s notify-send -i "$wallpaper" "Wallpaper & Colors Updated" "$(basename "$wallpaper")"

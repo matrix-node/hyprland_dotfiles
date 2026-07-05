@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+chosen=$(nmcli -t -f SSID,SECURITY,SIGNAL device wifi list \
+| awk -F: '!seen[$1]++ && $1 != "" {print $1 " (" $3 "%)"}' \
+| rofi -dmenu -p "Wi-Fi" -theme ~/.config/rofi/dmenu.rasi)
+
+[ -z "$chosen" ] && exit
+
+ssid="${chosen% (*}"
+
+nmcli device wifi connect "$ssid"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Pre-generate blurred wallpaper for wlogout
+# Called by matugen post_hook — runs in background, not on logout
+set -euo pipefail
+
+WALLPAPER=$(cat "$HOME/.cache/current-wallpaper" 2>/dev/null) || exit 0
+[ -f "$WALLPAPER" ] || exit 0
+
+OUTDIR="/tmp/wlogout"
+mkdir -p "$OUTDIR"
+
+# Scale to full HD then blur — fast to load at runtime
+magick "$WALLPAPER" -scale 1920x1080^ -blur 0x12 -quality 85 "$OUTDIR/wallpaper-blur.jpg"

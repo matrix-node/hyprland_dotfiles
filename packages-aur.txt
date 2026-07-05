@@ -1,0 +1,12 @@
+# === AUR packages ===
+bibata-cursor-theme
+brave-origin-nightly-bin
+spotify
+visual-studio-code-bin
+yay
+anydesk-bin
+appimagelauncher
+waypaper-git
+awww
+quickshell
+rofi-wifi-menu-git

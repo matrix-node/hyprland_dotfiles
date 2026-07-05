@@ -1,0 +1,45 @@
+# === Core Hyprland ecosystem ===
+hyprland
+hyprlock
+hypridle
+hyprpolkitagent
+waybar
+wlogout
+rofi
+
+# === Visual / theme ===
+matugen
+swaync
+waypaper
+nwg-look
+qt5ct
+qt6ct
+
+# === Terminal / editors ===
+kitty
+ghostty
+btop
+neovim
+fastfetch
+starship
+
+# === Audio / media ===
+pipewire
+pipewire-alsa
+pipewire-audio
+pipewire-jack
+pipewire-pulse
+wireplumber
+pavucontrol
+playerctl
+
+# === Utilities ===
+brightnessctl
+grimblast
+cliphist
+polkit-kde-agent
+
+# === Fonts ===
+ttf-jetbrains-mono-nerd
+ttf-nerd-fonts-symbols
+ttf-nerd-fonts-meta

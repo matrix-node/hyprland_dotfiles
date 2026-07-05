@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+[ -f "$HOME/.cache/current-wallpaper" ] || exit 0
+
+wallpaper=$(cat "$HOME/.cache/current-wallpaper")
+
+[ -f "$wallpaper" ] || exit 0
+
+"$HOME/.local/bin/matugen-apply-colors" "$wallpaper"
+
+for _ in $(seq 1 20); do
+	if timeout 1s awww img "$wallpaper" 2>/dev/null; then
+		exit 0
+	fi
+	sleep 0.1
+done
+
+timeout 1s awww img "$wallpaper" 2>/dev/null || true

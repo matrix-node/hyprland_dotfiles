@@ -1,0 +1,45 @@
+[general]
+framerate = 60
+bars = 40
+bar_width = 4
+bar_spacing = 2
+autosens = 1
+sensitivity = 100
+lower_cutoff_freq = 50
+higher_cutoff_freq = 10000
+
+[input]
+method = pipewire
+source = auto
+
+[output]
+method = ncurses
+channels = mono
+mono_option = average
+
+[smoothing]
+noise_reduction = 35
+monstercat = 1
+waves = 1
+gravity = 55
+
+[color]
+background = '#{{ colors.background.default.hex_stripped }}'
+foreground = '#{{ colors.primary.default.hex_stripped }}'
+gradient = 1
+gradient_color_1 = '#{{ colors.surface_container_high.default.hex_stripped }}'
+gradient_color_2 = '#{{ colors.primary_container.default.hex_stripped }}'
+gradient_color_3 = '#{{ colors.tertiary.default.hex_stripped }}'
+gradient_color_4 = '#{{ colors.primary.default.hex_stripped }}'
+gradient_color_5 = '#{{ colors.secondary.default.hex_stripped }}'
+gradient_color_6 = '#{{ colors.on_primary_container.default.hex_stripped }}'
+
+[eq]
+1 = 1.20
+2 = 1.10
+3 = 1.00
+4 = 0.95
+5 = 0.90
+6 = 1.00
+7 = 1.10
+8 = 1.15

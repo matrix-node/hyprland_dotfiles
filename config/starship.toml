@@ -1,0 +1,71 @@
+# Starship Prompt Config
+# Minimal, clean, matches the athena aesthetic
+
+format = """
+[](#f5bd6f)\
+$os\
+$username\
+[](bg:#f5bd6f fg:#251f17)\
+$directory\
+[](fg:#f5bd6f)\
+$git_branch\
+$git_status\
+[](fg:#f5bd6f)\
+$c\
+$rust\
+$golang\
+$nodejs\
+$php\
+$python\
+$java\
+$cmd_duration\
+[](fg:#f5bd6f)\
+$line_break\
+$character\
+"""
+
+[os]
+disabled = false
+style = "bg:#251f17 fg:#f5bd6f"
+format = "[ $symbol ]($style)"
+
+[os.symbols]
+windows = ""
+arch = ""
+
+[username]
+show_always = false
+style_user = "bg:#251f17 fg:#b8cda1"
+style_root = "bg:#251f17 fg:#ffb4ab"
+format = "[ $user ]($style)"
+
+[directory]
+style = "bg:#251f17 fg:#ede0d4"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = " "
+style = "bg:#251f17 fg:#ddc2a1"
+format = '\[[ $symbol $branch ](fg:#ddc2a1)\]'
+
+[git_status]
+style = "bg:#251f17 fg:#f5bd6f"
+format = '[$all_status$ahead_behind ](fg:#f5bd6f)'
+
+[nodejs]
+format = 'via [⬢ $version](bold green)'
+
+[python]
+format = 'via [🐍 $version](bold green)'
+
+[character]
+success_symbol = "[❯](fg:#f5bd6f)"
+error_symbol = "[❯](fg:#ffb4ab)"
+vicmd_symbol = "[❮](fg:#b8cda1)"
+
+[cmd_duration]
+format = "⏱️ $duration "
+style = "fg:#b8cda1"
+min_time = 2000

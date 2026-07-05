@@ -1,0 +1,81 @@
+@import url("./colors.css");
+
+* {
+    background-image: none;
+    box-shadow: none;
+}
+
+window {
+    background-color: transparent;
+    background-image: url("/tmp/wlogout/wallpaper-blur.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+/* ===== Button base ===== */
+button {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 64px;
+
+    min-width: 180px;
+    min-height: 110px;
+
+    border-style: solid;
+    border-width: 1px;
+    border-color: alpha(@outline_variant, 0.25);
+    border-radius: 20px;
+
+    color: @on_surface;
+    font-family: "JetBrainsMono Nerd Font", "Noto Color Emoji", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    margin: 10px;
+    padding: 50px 0 14px 0;
+
+    background-color: alpha(@surface, 0.45);
+    background-blend-mode: overlay;
+
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+button:hover {
+    background-color: alpha(@primary_container, 0.70);
+    border-color: alpha(@primary, 0.55);
+    color: @on_primary_container;
+    outline-style: none;
+    min-width: 192px;
+    min-height: 118px;
+}
+
+button:active {
+    background-color: alpha(@primary, 0.35);
+    border-color: @primary;
+    color: @on_primary;
+}
+
+/* ===== Per-button SVG icons ===== */
+#lock {
+    background-image: url("/usr/share/wlogout/assets/lock.svg");
+}
+
+#logout {
+    background-image: url("/usr/share/wlogout/assets/logout.svg");
+}
+
+#suspend {
+    background-image: url("/usr/share/wlogout/assets/suspend.svg");
+}
+
+#hibernate {
+    background-image: url("/usr/share/wlogout/assets/hibernate.svg");
+}
+
+#shutdown {
+    background-image: url("/usr/share/wlogout/assets/shutdown.svg");
+}
+
+#reboot {
+    background-image: url("/usr/share/wlogout/assets/reboot.svg");
+}

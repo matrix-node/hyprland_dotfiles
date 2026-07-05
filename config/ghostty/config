@@ -1,0 +1,35 @@
+# include ghostty-theme.conf
+
+# === Font ===
+font-family = MesloLGS Nerd Font
+font-size = 15
+
+# === Shell ===
+command = /usr/bin/zsh
+shell-integration = zsh
+
+# === Window padding ===
+window-padding-x = 5
+window-padding-y = 5
+window-padding-balance = true
+window-padding-color = background
+
+# === Cursor ===
+cursor-style = block
+cursor-style-blink = true
+
+# === Mouse ===
+mouse-hide-while-typing = true
+
+# === Clipboard ===
+clipboard-read = ask
+clipboard-write = allow
+clipboard-paste-protection = true
+
+# === GTK / Linux ===
+gtk-titlebar = true
+gtk-tabs-location = top
+gtk-wide-tabs = true
+
+# === Terminal ===
+term = xterm-256color
