@@ -2,6 +2,8 @@
 
 A fully themed **Arch Linux** Hyprland rice powered by [matugen](https://github.com/InioX/matugen) for automatic Material You color generation.
 
+![Preview](../preview.png)
+
 ## The Story
 
 I got tired of it.
