@@ -31,12 +31,19 @@ cd ~/hyprland_dotfiles
 ### 2. Run the installer
 
 ```bash
-./install.sh          # interactive
-./install.sh --yes    # fully automatic
+./install.sh          # interactive (choose between ML4W, End-4, or Matrix-Node)
+./install.sh --yes    # fully automatic (defaults to Matrix-Node fallback)
 ```
 
-The installer will:
-- Install all required packages (pacman + AUR)
+The new installer provides options for different popular dotfile setups:
+1. **ML4W (MyLinuxForWork)** - Automatically clones and runs the ML4W dotfiles installer.
+2. **End-4 (dots-hyprland)** - Automatically clones and runs the end-4 dots-hyprland setup script.
+3. **Matrix-Node Dotfiles** - Installs the custom setup in this repository.
+
+*Note: If the ML4W or End-4 installers fail, the script will gracefully prompt you to fall back to the Matrix-Node dotfiles.*
+
+The Matrix-Node installation will:
+- Install all required packages (pacman + AUR) safely
 - Symlink config files to `~/.config/`
 - Set up wallpaper pipeline scripts
 - Enable necessary systemd services

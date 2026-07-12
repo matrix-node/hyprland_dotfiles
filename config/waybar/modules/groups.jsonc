@@ -9,11 +9,10 @@
       "custom/distro",
       "custom/terminal",
       "custom/code",
-      "custom/obsidian",
-      "custom/office",
       "custom/files",
       "custom/spotify",
-      "custom/browser"
+      "custom/browser",
+      "custom/browser2"
     ]
   },
   "group/storage": {

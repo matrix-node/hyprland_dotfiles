@@ -23,8 +23,8 @@ colors.shadow = colors.shadow or fallback_colors.shadow
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
 	general = {
-		gaps_in = 5,
-		gaps_out = 10,
+		gaps_in = 8,
+		gaps_out = 16,
 
 		border_size = 2,
 
@@ -38,11 +38,11 @@ hl.config({
 	},
 
 	decoration = {
-		rounding = 0,
-		rounding_power = 0,
+		rounding = 10,
+		rounding_power = 2,
 
-		active_opacity = 0.8,
-		inactive_opacity = 0.7,
+		active_opacity = 0.95,
+		inactive_opacity = 0.85,
 
 		shadow = {
 			enabled = true,
@@ -53,9 +53,9 @@ hl.config({
 
 		blur = {
 			enabled = true,
-			size = 5,
-			passes = 3,
-			vibrancy = 1,
+			size = 12,
+			passes = 4,
+			vibrancy = 0.5,
 		},
 	},
 

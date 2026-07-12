@@ -5,37 +5,32 @@
   },
   "custom/terminal": {
     "format": "󰆍",
-    "on-click": "ghostty",
-    "tooltip": false
+    "on-click": "kitty",
+    "tooltip": "Terminal (kitty)"
   },
   "custom/code": {
     "format": "󰨞",
     "on-click": "code",
-    "tooltip": false
-  },
-  "custom/obsidian": {
-    "format": "󰹕",
-    "on-click": "obsidian",
-    "tooltip": false
-  },
-  "custom/office": {
-    "format": "󰏆",
-    "on-click": "onlyoffice-desktopeditors",
-    "tooltip": false
+    "tooltip": "VS Code"
   },
   "custom/files": {
     "format": "",
-    "on-click": "thunar",
-    "tooltip": false
+    "on-click": "nautilus",
+    "tooltip": "Files (Nautilus)"
   },
   "custom/spotify": {
     "format": "",
     "on-click": "spotify",
-    "tooltip": false
+    "tooltip": "Spotify"
   },
   "custom/browser": {
     "format": "",
+    "on-click": "brave-origin-nightly",
+    "tooltip": "Brave Origin Nightly"
+  },
+  "custom/browser2": {
+    "format": "󰈹",
     "on-click": "firefox",
-    "tooltip": false
+    "tooltip": "Firefox"
   }
 }

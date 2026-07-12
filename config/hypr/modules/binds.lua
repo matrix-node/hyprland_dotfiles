@@ -2,50 +2,59 @@
 ---- MY PROGRAMS ----
 ---------------------
 
--- Set programs that you use
-local terminal = "ghostty"
-local editor = "code"
-local fileManager = "nautilus"
-local browser = "brave-origin-nightly"
-local browser2 = "firefox"
-local music = "spotify"
-local enta = "--app=https://netflix.com"
-local menu = "/home/matrix/.config/rofi/type-2/launcher.sh"
-local virtualMachine = "virt-manager"
+-- Single source of truth for apps (keep waybar modules/distro.jsonc in sync)
+local apps = {
+	terminal = "kitty",
+	editor = "code",
+	fileManager = "nautilus",
+	browser = "brave-origin-nightly",
+	browser2 = "firefox",
+	music = "spotify",
+	netflix = "brave-origin-nightly --app=https://www.netflix.com",
+	menu = "/home/matrix/.config/rofi/type-2/launcher.sh",
+	virtualMachine = "virt-manager",
+	cliphist = "/home/matrix/.local/bin/cliphist-picker pick",
+	wallpaper = "/home/matrix/.local/bin/set-wallpaper",
+	waybarRestart = "/home/matrix/.config/waybar/scripts/launch.sh",
+	wlogout = "/home/matrix/.config/wlogout/wlogout-launch.sh",
+	screenshotDir = "~/Pictures/Screenshots",
+}
 
 ---------------------
 ---- KEYBINDINGS ----
 ---------------------
 
-local mainMod = "SUPER" -- Sets "Windows" key as main modifier
+local mainMod = "SUPER"
 local secondMod = "SUPER + SHIFT"
 
 -- Apps
-hl.bind(mainMod .. " + N", hl.dsp.exec_cmd(enta))
-hl.bind(secondMod .. " + V", hl.dsp.exec_cmd(virtualMachine))
-hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
-hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
-hl.bind(secondMod .. " + B", hl.dsp.exec_cmd(browser2))
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(music))
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(editor))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("/home/$USER/.config/waybar/scripts/launch.sh"))
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("/home/matrix/.config/rofi/type-2/launcher.sh"))
-hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("cliphist-picker pick"))
+hl.bind(mainMod .. " + N", hl.dsp.exec_cmd(apps.netflix))
+hl.bind(secondMod .. " + V", hl.dsp.exec_cmd(apps.virtualMachine)) -- Super+Shift+V → virt-manager
+hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(apps.terminal))
+hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(apps.fileManager))
+hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(apps.fileManager))
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(apps.browser))
+hl.bind(secondMod .. " + B", hl.dsp.exec_cmd(apps.browser2))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(apps.music))
+hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(apps.editor))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(apps.waybarRestart))
+hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(apps.menu))
+-- Clipboard history: Super+Alt+V (avoids clash with Super+Shift+V = virt-manager)
+hl.bind(mainMod .. " + ALT + V", hl.dsp.exec_cmd(apps.cliphist))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock --immediate-render"))
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("/home/matrix/.local/bin/set-wallpaper"))
-hl.bind(secondMod .. " + L", hl.dsp.exec_cmd("/home/matrix/.config/wlogout/wlogout-launch.sh"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(apps.wallpaper))
+hl.bind(secondMod .. " + L", hl.dsp.exec_cmd(apps.wlogout))
 
-local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
+hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 
 hl.bind(
 	secondMod .. " + M",
 	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
 )
-hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
+-- Master layout: cycle master orientation (was dwindle-only togglesplit)
+hl.bind(mainMod .. " + J", hl.dsp.layout("orientationnext"))
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
@@ -61,7 +70,7 @@ for i = 1, 10 do
 	hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
--- Example special workspace (scratchpad)
+-- Special workspace (scratchpad)
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
@@ -73,9 +82,12 @@ hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
--- Taking Screenshots using Grimblast
-hl.bind("PRINT", hl.dsp.exec_cmd("grimblast --notify save area ~/Pictures/Screenshots/$(date +%F-%T).png"))
-hl.bind(secondMod .. " + PRINT", hl.dsp.exec_cmd("grimblast copysave output"))
+-- Screenshots (grimblast)
+hl.bind(
+	"PRINT",
+	hl.dsp.exec_cmd("grimblast --notify save area " .. apps.screenshotDir .. "/$(date +%F-%T).png")
+)
+hl.bind(secondMod .. " + PRINT", hl.dsp.exec_cmd("grimblast --notify copysave output"))
 
 -- Laptop multimedia keys for volume and LCD brightness
 hl.bind(
@@ -99,7 +111,11 @@ hl.bind(
 	{ locked = true, repeating = true }
 )
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
+hl.bind(
+	"XF86MonBrightnessDown",
+	hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),
+	{ locked = true, repeating = true }
+)
 
 -- Requires playerctl
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })

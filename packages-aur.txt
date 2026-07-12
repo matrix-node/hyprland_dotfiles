@@ -8,7 +8,5 @@ appimagelauncher
 waypaper-git
 awww
 quickshell
-rofi-wifi-menu-git
-wlogout
 grimblast
 ttf-nerd-fonts-meta

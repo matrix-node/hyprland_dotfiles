@@ -46,15 +46,15 @@
       "actions": [
         {
           "label": "",
-          "command": "swaync-client -cp; sleep 0.3; hyprctl dispatch exec 'path/to/your/screenshot.sh'"
+          "command": "swaync-client -cp; sleep 0.2; grimblast --notify copysave area ~/Pictures/Screenshots/$(date +%F-%T).png"
         },
         {
           "label": "󰹑",
-          "command": "swaync-client -cp; sleep 0.3; hyprctl dispatch exec 'path/to/your/record.sh'"
+          "command": "swaync-client -cp; sleep 0.2; grimblast --notify copysave output"
         },
         {
           "label": "",
-          "command": "swaync-client -cp; sleep 0.3; hyprctl dispatch exec 'hyprpicker -a'"
+          "command": "swaync-client -cp; sleep 0.2; hyprpicker -a"
         },
         {
           "label": "󰪚",

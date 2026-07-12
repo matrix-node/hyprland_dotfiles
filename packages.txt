@@ -1,20 +1,35 @@
+# Core compositor stack
 hyprland
 hyprlock
 hypridle
 hyprpolkitagent
+hyprpicker
+xdg-desktop-portal
+xdg-desktop-portal-hyprland
+
+# Bar / launcher / notifications
 waybar
 rofi
-matugen
 swaync
+wlogout
+
+# Wallpaper / theming
+matugen
 nwg-look
 qt5ct
 qt6ct
+imagemagick
+
+# Terminals / editors
 kitty
 ghostty
-btop
 neovim
-fastfetch
+
+# Shell / prompt
 starship
+zsh
+
+# Audio
 pipewire
 pipewire-alsa
 pipewire-audio
@@ -23,8 +38,21 @@ pipewire-pulse
 wireplumber
 pavucontrol
 playerctl
-brightnessctl
+cava
+
+# Clipboard / screenshots
 cliphist
-polkit-kde-agent
+wl-clipboard
+grim
+slurp
+
+# Utilities
+brightnessctl
+jq
+btop
+fastfetch
+nautilus
+
+# Fonts
 ttf-jetbrains-mono-nerd
 ttf-nerd-fonts-symbols

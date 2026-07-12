@@ -86,7 +86,7 @@ output_path = "/home/matrix/.config/qt5ct/colors/matugen.conf"
 input_path = "/home/matrix/.config/matugen/templates/qt6ct-colors.conf"
 output_path = "/home/matrix/.config/qt6ct/colors/matugen.conf"
 
-# --- Firefox userChrome.css ---
+# --- Firefox userChrome.css (active profile path) ---
 [templates.firefox]
 input_path = "/home/matrix/.config/matugen/templates/firefox-userChrome.css"
-output_path = "/home/matrix/.mozilla/firefox/chrome/userChrome.css"
+output_path = "/home/matrix/.mozilla/firefox/hq7lgdrj.default-release/chrome/userChrome.css"

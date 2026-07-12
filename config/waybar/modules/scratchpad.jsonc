@@ -1,0 +1,10 @@
+{
+  "custom/scratchpad": {
+    "exec": "~/.config/waybar/scripts/scratchpad.sh",
+    "return-type": "json",
+    "interval": 2,
+    "tooltip": true,
+    "tooltip-format": "Scratchpad (Super+S)",
+    "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"magic\")'"
+  }
+}

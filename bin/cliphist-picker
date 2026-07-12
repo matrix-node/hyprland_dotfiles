@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Clipboard manager with rofi UI
+# Uses cliphist for history and rofi for selection
+
+set -euo pipefail
+
+case "${1:-}" in
+    save)
+        cliphist store
+        ;;
+    pick)
+        # Show cliphist entries in rofi, paste selected
+        selection=$(cliphist list | rofi -dmenu -p " Clipboard" -theme ~/.config/rofi/dmenu.rasi -theme-str 'window {width: 600px;} listview {lines: 15;}')
+        if [ -n "$selection" ]; then
+            echo "$selection" | cliphist decode | wl-copy
+        fi
+        ;;
+    clean)
+        cliphist wipe
+        notify-send "Clipboard history cleared"
+        ;;
+    *)
+        echo "Usage: cliphist-picker {save|pick|clean}"
+        exit 1
+        ;;
+esac

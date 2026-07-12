@@ -9,6 +9,7 @@
   "reload_style_on_change": true,
   "include": [
     "./modules/cava.jsonc",
+    "./modules/scratchpad.jsonc",
     "./modules/music.jsonc",
     "./modules/groups.jsonc",
     "./modules/distro.jsonc",
@@ -32,8 +33,9 @@
     "custom/cava",
     "power-profiles-daemon",
     "hyprland/workspaces",
+    "custom/scratchpad",
     "idle_inhibitor",
-    "custom/music",
+    "custom/music"
   ],
   "modules-right": [
     "group/audio",

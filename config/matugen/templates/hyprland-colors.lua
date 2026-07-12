@@ -19,4 +19,7 @@ return {
   outline_variant = "rgb({{ colors.outline_variant.default.hex_stripped }})",
 
   error = "rgb({{ colors.error.default.hex_stripped }})",
+
+  -- Shadow for borders / decoration (semi-transparent black)
+  shadow = "rgba(000000e0)",
 }

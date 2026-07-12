@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 bar="▁▂▃▄▅▆▇█"
 dict="s/;/ /g;"
@@ -10,9 +10,14 @@ while [ $i -lt ${#bar} ]; do
   i=$((i = i + 1))
 done
 
-# write cava config
+# write cava config — use matugen-generated config if available
 config_file="/tmp/cava_waybar_config"
-cat >"$config_file" <<EOF
+matugen_config="$HOME/.config/cava/waybar.conf"
+
+if [[ -f "$matugen_config" ]]; then
+  cp "$matugen_config" "$config_file"
+else
+  cat >"$config_file" <<EOF
 [general]
 bars = 24
 bar_width = 2
@@ -31,9 +36,27 @@ data_format = ascii
 ascii_max_range = 7
 channels = mono
 mono_option = average
-EOF
 
-# read stdout from cava
-cava -p "$config_file" | while read -r line; do
-  echo "$line" | sed "$dict"
+[smoothing]
+noise_reduction = 65
+monstercat = 1
+waves = 0
+gravity = 70
+EOF
+fi
+
+# wait for PipeWire to be ready before starting cava
+while true; do
+  if pw-cli info all 2>/dev/null | grep -q "core" 2>/dev/null; then
+    break
+  fi
+  sleep 0.5
+done
+
+# run cava in a restart loop
+while true; do
+  cava -p "$config_file" 2>/dev/null | while read -r line; do
+    echo "$line" | sed "$dict"
+  done
+  sleep 0.5
 done

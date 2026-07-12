@@ -66,6 +66,7 @@
   color: @primary;
   font-size: 10px;
   letter-spacing: 0px;
+  text-shadow: 0 0 6px alpha(@primary, 0.4);
 }
 
 #custom-cava.quiet {
