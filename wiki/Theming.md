@@ -31,7 +31,7 @@ Press `Super + W` to launch **waypaper**, a GUI wallpaper manager. It supports:
 When you select a wallpaper, waypaper runs the `post_command`:
 
 ```bash
-/home/matrix/.local/bin/matugen-apply-colors $wallpaper
+~/.local/bin/matugen-apply-colors $wallpaper
 ```
 
 This script:
@@ -96,8 +96,8 @@ If you want to add a new app to the theming pipeline:
 
 ```toml
 [templates.your_app]
-input_path = "/home/matrix/.config/matugen/templates/your-template.conf"
-output_path = "/home/matrix/.config/your-app/config.conf"
+input_path = "~/.config/matugen/templates/your-template.conf"
+output_path = "~/.config/your-app/config.conf"
 post_hook = "pkill -SIGUSR1 your-app"  # optional
 ```
 

@@ -1,12 +1,15 @@
-bibata-cursor-theme
-brave-origin-nightly-bin
-spotify
-visual-studio-code-bin
-yay
-anydesk-bin
-appimagelauncher
+# AUR packages — Matrix Hyprland rice
+# One package per line. Failures are non-fatal (logged and skipped).
+# Prefer official packages when available; these fill the gaps.
+
+# Logout menu (AUR / local builds)
+wlogout
+
+# Wallpaper picker
 waypaper-git
-awww
-quickshell
-grimblast
-ttf-nerd-fonts-meta
+
+# Screenshots helper
+grimblast-git
+
+# Cursor theme
+bibata-cursor-theme

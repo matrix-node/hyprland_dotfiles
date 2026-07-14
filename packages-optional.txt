@@ -1,0 +1,11 @@
+# Optional / personal packages — NOT required for the rice to work.
+# Installer offers these as a separate optional step.
+# Failures here never block installation.
+
+brave-origin-nightly-bin
+firefox
+spotify
+visual-studio-code-bin
+anydesk-bin
+appimagelauncher
+ttf-nerd-fonts-meta

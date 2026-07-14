@@ -5,12 +5,24 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
 
-# Don't track wallpaper files (too large)
-wallpapers/*.jpg
-wallpapers/*.png
-!wallpapers/README.md
+# Large media that should not ship by accident
+*.mp4
+*.webm
+*.mkv
+*.mov
 
-# Neovim plugin manager cache
+# Neovim plugin manager cache / lock (regenerated on first run)
 config/nvim/.cache/
 config/nvim/lazy-lock.json
+
+# Installer runtime logs
+.install-logs/
+*.log
+
+# Backup artifacts from installer
+*.bak
+*.bak.*

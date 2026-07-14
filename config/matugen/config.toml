@@ -1,92 +1,95 @@
 [config]
 reload_apps = true
 
+# Paths use ~ so they work for every user (matugen expands ~).
+
 # --- Waybar ---
 [templates.waybar]
-input_path = "/home/matrix/.config/matugen/templates/waybar-colors.css"
-output_path = "/home/matrix/.config/waybar/tokens/colors.css"
+input_path = "~/.config/matugen/templates/waybar-colors.css"
+output_path = "~/.config/waybar/tokens/colors.css"
 post_hook = "pkill -SIGUSR2 waybar"
 
 # --- Hyprland ---
 [templates.hyprland]
-input_path = "/home/matrix/.config/matugen/templates/hyprland-colors.lua"
-output_path = "/home/matrix/.config/hypr/colors.lua"
+input_path = "~/.config/matugen/templates/hyprland-colors.lua"
+output_path = "~/.config/hypr/colors.lua"
 post_hook = "hyprctl reload"
 
 # --- Ghostty Terminal ---
 [templates.ghostty]
-input_path = "/home/matrix/.config/matugen/templates/ghostty-theme.conf"
-output_path = "/home/matrix/.config/ghostty/ghostty-theme.conf"
+input_path = "~/.config/matugen/templates/ghostty-theme.conf"
+output_path = "~/.config/ghostty/ghostty-theme.conf"
 
 # --- Rofi ---
 [templates.rofi]
-input_path = "/home/matrix/.config/matugen/templates/rofi-colors.rasi"
-output_path = "/home/matrix/.config/rofi/colors.rasi"
+input_path = "~/.config/matugen/templates/rofi-colors.rasi"
+output_path = "~/.config/rofi/colors.rasi"
 
 # --- swaync ---
 [templates.swaync]
-input_path = "/home/matrix/.config/matugen/templates/swaync-variables.css"
-output_path = "/home/matrix/.config/swaync/tokens/variables.css"
+input_path = "~/.config/matugen/templates/swaync-variables.css"
+output_path = "~/.config/swaync/tokens/variables.css"
 post_hook = "swaync-client --reload-css"
 
 # --- Neovim ---
 [templates.nvim]
-input_path = "/home/matrix/.config/matugen/templates/nvim-matugen.lua"
-output_path = "/home/matrix/.config/nvim/lua/generated/matugen.lua"
+input_path = "~/.config/matugen/templates/nvim-matugen.lua"
+output_path = "~/.config/nvim/lua/generated/matugen.lua"
 
 # --- GTK3 CSS ---
 [templates.gtk]
-input_path = "/home/matrix/.config/matugen/templates/gtk-css.css"
-output_path = "/home/matrix/.config/gtk-3.0/gtk.css"
+input_path = "~/.config/matugen/templates/gtk-css.css"
+output_path = "~/.config/gtk-3.0/gtk.css"
 
 # --- Cava ---
 [templates.cava]
-input_path = "/home/matrix/.config/matugen/templates/cava-config"
-output_path = "/home/matrix/.config/cava/config"
+input_path = "~/.config/matugen/templates/cava-config"
+output_path = "~/.config/cava/config"
 
 # --- Waybar Cava ---
 [templates.cava_waybar]
-input_path = "/home/matrix/.config/matugen/templates/cava-waybar.conf"
-output_path = "/home/matrix/.config/cava/waybar.conf"
+input_path = "~/.config/matugen/templates/cava-waybar.conf"
+output_path = "~/.config/cava/waybar.conf"
 
 # --- Wlogout ---
 [templates.wlogout]
-input_path = "/home/matrix/.config/matugen/templates/wlogout-colors.css"
-output_path = "/home/matrix/.config/wlogout/colors.css"
-post_hook = "/home/matrix/.local/bin/generate-wlogout-blur"
+input_path = "~/.config/matugen/templates/wlogout-colors.css"
+output_path = "~/.config/wlogout/colors.css"
+post_hook = "~/.local/bin/generate-wlogout-blur"
 
 # --- Hyprlock ---
 [templates.hyprlock]
-input_path = "/home/matrix/.config/matugen/templates/hyprlock-colors.conf"
-output_path = "/home/matrix/.config/hypr/hyprlock-colors.conf"
-
+input_path = "~/.config/matugen/templates/hyprlock-colors.conf"
+output_path = "~/.config/hypr/hyprlock-colors.conf"
 
 # --- Rofi Type-2 ---
 [templates.rofi_type2]
-input_path = "/home/matrix/.config/matugen/templates/rofi-type2-colors.rasi"
-output_path = "/home/matrix/.config/rofi/type-2/shared/colors.rasi"
+input_path = "~/.config/matugen/templates/rofi-type2-colors.rasi"
+output_path = "~/.config/rofi/type-2/shared/colors.rasi"
 
 # --- GTK4 CSS ---
 [templates.gtk4]
-input_path = "/home/matrix/.config/matugen/templates/gtk4-css.css"
-output_path = "/home/matrix/.config/gtk-4.0/gtk.css"
+input_path = "~/.config/matugen/templates/gtk4-css.css"
+output_path = "~/.config/gtk-4.0/gtk.css"
 
 # --- Fastfetch ---
 [templates.fastfetch]
-input_path = "/home/matrix/.config/matugen/templates/fastfetch-config.jsonc"
-output_path = "/home/matrix/.config/fastfetch/config.jsonc"
+input_path = "~/.config/matugen/templates/fastfetch-config.jsonc"
+output_path = "~/.config/fastfetch/config.jsonc"
 
 # --- Qt5 Colors ---
 [templates.qt5ct]
-input_path = "/home/matrix/.config/matugen/templates/qt5ct-colors.conf"
-output_path = "/home/matrix/.config/qt5ct/colors/matugen.conf"
+input_path = "~/.config/matugen/templates/qt5ct-colors.conf"
+output_path = "~/.config/qt5ct/colors/matugen.conf"
 
 # --- Qt6 Colors ---
 [templates.qt6ct]
-input_path = "/home/matrix/.config/matugen/templates/qt6ct-colors.conf"
-output_path = "/home/matrix/.config/qt6ct/colors/matugen.conf"
+input_path = "~/.config/matugen/templates/qt6ct-colors.conf"
+output_path = "~/.config/qt6ct/colors/matugen.conf"
 
-# --- Firefox userChrome.css (active profile path) ---
+# --- Firefox userChrome.css ---
+# Installer patches this to the active Firefox profile if one is found.
+# Without a profile, matugen skips this template gracefully with --continue-on-error.
 [templates.firefox]
-input_path = "/home/matrix/.config/matugen/templates/firefox-userChrome.css"
-output_path = "/home/matrix/.mozilla/firefox/hq7lgdrj.default-release/chrome/userChrome.css"
+input_path = "~/.config/matugen/templates/firefox-userChrome.css"
+output_path = "~/.mozilla/firefox/default/chrome/userChrome.css"

@@ -5,9 +5,11 @@
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
 -- Ensure user scripts (cliphist-picker, wallpaper helpers) are always found
+local home = os.getenv("HOME") or ""
 local path = os.getenv("PATH") or "/usr/bin"
-if not path:find("/home/matrix/.local/bin", 1, true) then
-	path = "/home/matrix/.local/bin:" .. path
+local local_bin = home .. "/.local/bin"
+if home ~= "" and not path:find(local_bin, 1, true) then
+	path = local_bin .. ":" .. path
 end
 hl.env("PATH", path)
 

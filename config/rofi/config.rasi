@@ -1,4 +1,4 @@
-@import "/home/matrix/.config/rofi/colors.rasi"
+@import "colors.rasi"
 
 configuration {
     modi:                "drun,filebrowser,window,run";

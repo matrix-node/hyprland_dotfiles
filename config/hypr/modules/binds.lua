@@ -3,6 +3,7 @@
 ---------------------
 
 -- Single source of truth for apps (keep waybar modules/distro.jsonc in sync)
+local home = os.getenv("HOME") or ""
 local apps = {
 	terminal = "kitty",
 	editor = "code",
@@ -11,12 +12,12 @@ local apps = {
 	browser2 = "firefox",
 	music = "spotify",
 	netflix = "brave-origin-nightly --app=https://www.netflix.com",
-	menu = "/home/matrix/.config/rofi/type-2/launcher.sh",
+	menu = home .. "/.config/rofi/type-2/launcher.sh",
 	virtualMachine = "virt-manager",
-	cliphist = "/home/matrix/.local/bin/cliphist-picker pick",
-	wallpaper = "/home/matrix/.local/bin/set-wallpaper",
-	waybarRestart = "/home/matrix/.config/waybar/scripts/launch.sh",
-	wlogout = "/home/matrix/.config/wlogout/wlogout-launch.sh",
+	cliphist = home .. "/.local/bin/cliphist-picker pick",
+	wallpaper = home .. "/.local/bin/set-wallpaper",
+	waybarRestart = home .. "/.config/waybar/scripts/launch.sh",
+	wlogout = home .. "/.config/wlogout/wlogout-launch.sh",
 	screenshotDir = "~/Pictures/Screenshots",
 }
 

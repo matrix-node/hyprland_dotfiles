@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Apply matugen colors from the current wallpaper
-# Called by waypaper post_command with $wallpaper
-
-set -euo pipefail
+# Apply matugen colors from the current wallpaper.
+# Called by waypaper post_command with $wallpaper as $1.
+set -uo pipefail
 
 run_quiet() {
     timeout "$@" 2>/dev/null || true
@@ -26,11 +25,27 @@ fi
 mkdir -p "$HOME/.cache"
 echo "$wallpaper" > "$HOME/.cache/current-wallpaper"
 
+MATUGEN_CFG="${MATUGEN_CONFIG:-$HOME/.config/matugen/config.toml}"
+if [ ! -f "$MATUGEN_CFG" ]; then
+    # Fallback: repo layout when configs are not yet linked
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    REPO_CANDIDATE="$(cd "$SCRIPT_DIR/.." 2>/dev/null && pwd)"
+    if [ -f "$REPO_CANDIDATE/config/matugen/config.toml" ]; then
+        MATUGEN_CFG="$REPO_CANDIDATE/config/matugen/config.toml"
+    else
+        exit 0
+    fi
+fi
+
 # Run matugen to generate all templates.
 # --continue-on-error ensures all templates are attempted even if one fails.
 # Post-hooks in matugen config handle app reloads automatically.
-timeout 20s matugen image -c /home/matrix/.config/matugen/config.toml "$wallpaper" \
-    -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error || true
+if command -v matugen &>/dev/null; then
+    timeout 30s matugen image -c "$MATUGEN_CFG" "$wallpaper" \
+        -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error || true
+fi
 
-# Notify user
-run_quiet 2s notify-send -i "$wallpaper" "Wallpaper & Colors Updated" "$(basename "$wallpaper")"
+# Notify user (best-effort)
+if command -v notify-send &>/dev/null; then
+    run_quiet 2s notify-send -i "$wallpaper" "Wallpaper & Colors Updated" "$(basename "$wallpaper")"
+fi

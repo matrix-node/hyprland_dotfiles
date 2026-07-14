@@ -1,3 +1,7 @@
+# Official Arch packages — Matrix Hyprland rice (core)
+# One package per line. Comments and blank lines are ignored.
+# Installer continues on individual failures.
+
 # Core compositor stack
 hyprland
 hyprlock
@@ -6,19 +10,21 @@ hyprpolkitagent
 hyprpicker
 xdg-desktop-portal
 xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
 
 # Bar / launcher / notifications
 waybar
 rofi
 swaync
-wlogout
 
 # Wallpaper / theming
 matugen
+awww
 nwg-look
 qt5ct
 qt6ct
 imagemagick
+quickshell
 
 # Terminals / editors
 kitty
@@ -52,7 +58,13 @@ jq
 btop
 fastfetch
 nautilus
+polkit
+git
+base-devel
 
 # Fonts
 ttf-jetbrains-mono-nerd
 ttf-nerd-fonts-symbols
+ttf-font-awesome
+noto-fonts
+noto-fonts-emoji

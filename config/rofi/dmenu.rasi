@@ -3,7 +3,7 @@
  * macOS-style blurred popup for wifi/bluetooth/clipboard menus
  */
 
-@import "/home/matrix/.config/rofi/colors.rasi"
+@import "colors.rasi"
 
 configuration {
     show-icons: false;
