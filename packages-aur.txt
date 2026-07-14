@@ -1,15 +1,8 @@
-# AUR packages — Matrix Hyprland rice
+# AUR packages required for the Matrix Hyprland rice.
 # One package per line. Failures are non-fatal (logged and skipped).
-# Prefer official packages when available; these fill the gaps.
+# No personal apps — only components the rice depends on.
 
-# Logout menu (AUR / local builds)
 wlogout
-
-# Wallpaper picker
 waypaper-git
-
-# Screenshots helper
 grimblast-git
-
-# Cursor theme
 bibata-cursor-theme

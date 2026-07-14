@@ -17,7 +17,6 @@ LOG_FILE="${LOG_DIR}/install-${TIMESTAMP}.log"
 AUTOYES=false
 SKIP_PACKAGES=false
 SKIP_AUR=false
-SKIP_OPTIONAL=false
 SKIP_WALLPAPER=false
 DRY_RUN=false
 WALLPAPER_ARG=""
@@ -55,7 +54,6 @@ Options:
   --wallpaper PATH       Wallpaper to apply (file name under wallpapers/ or absolute path)
   --no-packages          Skip pacman package installation
   --no-aur               Skip AUR packages
-  --no-optional          Skip optional packages prompt
   --no-wallpaper         Skip wallpaper setup
   --copy                 Copy configs instead of symlinking
   --dry-run              Show what would happen, change nothing
@@ -106,7 +104,6 @@ parse_args() {
             --wallpaper) WALLPAPER_ARG="${2:-}"; shift 2 ;;
             --no-packages) SKIP_PACKAGES=true; shift ;;
             --no-aur) SKIP_AUR=true; shift ;;
-            --no-optional) SKIP_OPTIONAL=true; shift ;;
             --no-wallpaper) SKIP_WALLPAPER=true; shift ;;
             --copy) COPY_MODE=true; shift ;;
             --dry-run) DRY_RUN=true; shift ;;
@@ -810,8 +807,8 @@ print_summary() {
         # unique
         printf '    - %s\n' "$(printf '%s\n' "${FAILED_PKGS[@]}" | sort -u)"
         echo ""
-        echo -e "  ${DIM}These are optional or may need manual install later.${NC}"
-        echo -e "  ${DIM}The rice still works without most of them.${NC}"
+        echo -e "  ${DIM}Re-run install later, or install manually. See the log for details.${NC}"
+        echo -e "  ${DIM}Core configs still deploy even if some packages failed.${NC}"
     fi
 
     if [[ ${#WARNINGS[@]} -gt 0 ]]; then
@@ -824,7 +821,6 @@ print_summary() {
     echo "    1. Log out and back in (or reboot)"
     echo "    2. Select Hyprland from your display manager"
     echo "    3. Press Super+W to change wallpaper (colors auto-update)"
-    echo "    4. Optional packages:  yay -S - < packages-optional.txt"
     echo ""
     local wp
     wp="$(cat "$HOME/.cache/current-wallpaper" 2>/dev/null || true)"
@@ -863,41 +859,10 @@ main() {
     fi
 
     if ! $SKIP_AUR; then
-        if confirm "Install AUR packages (wlogout, waypaper, etc.)?" "Y"; then
+        if confirm "Install AUR packages (wlogout, waypaper, grimblast, cursor)?" "Y"; then
             install_aur_list "$REPO_DIR/packages-aur.txt" "AUR packages"
         else
             warn "Skipping AUR packages"
-        fi
-    fi
-
-    if ! $SKIP_OPTIONAL && [[ -f "$REPO_DIR/packages-optional.txt" ]]; then
-        if confirm "Install optional/personal packages (browser, spotify, vscode, …)?" "N"; then
-            # Try AUR helper first for mixed list
-            local helper
-            helper="$(ensure_aur_helper 2>/dev/null)" || helper=""
-            step "Optional packages"
-            local pkgs=()
-            mapfile -t pkgs < <(read_pkg_list "$REPO_DIR/packages-optional.txt")
-            for pkg in "${pkgs[@]}"; do
-                if is_installed "$pkg"; then
-                    dim "  already installed: $pkg"
-                    continue
-                fi
-                if $DRY_RUN; then
-                    info "  [dry-run] optional: $pkg"
-                    continue
-                fi
-                if sudo pacman -S --needed --noconfirm "$pkg" >>"$LOG_FILE" 2>&1; then
-                    ok "  installed: $pkg"
-                elif [[ -n "$helper" ]] && "$helper" -S --needed --noconfirm "$pkg" >>"$LOG_FILE" 2>&1; then
-                    ok "  installed (AUR): $pkg"
-                else
-                    warn "  optional failed (ignored): $pkg"
-                    FAILED_PKGS+=("$pkg (optional)")
-                fi
-            done
-        else
-            dim "Skipping optional packages (default)"
         fi
     fi
 

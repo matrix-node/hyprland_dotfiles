@@ -20,8 +20,6 @@ A fully themed **Arch Linux** Hyprland rice powered by [matugen](https://github.
 - **Cava** — terminal audio visualizer with gradient colors
 - **GTK3 + GTK4 + Qt5 + Qt6** — consistent theming
 - **Neovim** — colorscheme generated from wallpaper
-- **Firefox & Brave** — optional browser theming
-
 ## Quick install
 
 ```bash
@@ -30,7 +28,7 @@ cd ~/hyprland_dotfiles
 ./install.sh
 ```
 
-Fully automatic (default wallpaper, skip optional apps):
+Fully automatic (default wallpaper):
 
 ```bash
 ./install.sh --yes
@@ -46,13 +44,13 @@ Pick a bundled wallpaper by name:
 
 1. Installs official packages from `packages.txt` (bulk install, then per-package fallback)
 2. Installs AUR packages from `packages-aur.txt` via `yay`/`paru` (installs `yay` if missing)
-3. Optionally offers personal apps from `packages-optional.txt` (default: skip)
-4. Symlinks configs into `~/.config/` (backs up existing files)
-5. Copies bundled wallpapers → `~/Pictures/Wallpapers/`
-6. Applies a default (or selected) wallpaper and runs matugen
-7. Enables `hyprpolkitagent` / `hypridle` user services
+3. Symlinks configs into `~/.config/` (backs up existing files)
+4. Copies bundled wallpapers → `~/Pictures/Wallpapers/`
+5. Applies a default (or selected) wallpaper and runs matugen
+6. Enables `hyprpolkitagent` / `hypridle` user services
 
-**Failed packages are logged and skipped.** The rice still installs.
+Package lists only include what the rice needs to run — no personal apps (browsers, Spotify, VS Code, etc.).  
+**Failed packages are logged and skipped.** Config deploy still continues.
 
 ### Installer flags
 
@@ -62,7 +60,6 @@ Pick a bundled wallpaper by name:
 | `--wallpaper PATH` | File under `wallpapers/` or absolute path |
 | `--no-packages` | Skip pacman packages |
 | `--no-aur` | Skip AUR packages |
-| `--no-optional` | Skip optional package prompt |
 | `--no-wallpaper` | Skip wallpaper setup |
 | `--copy` | Copy configs instead of symlinking |
 | `--dry-run` | Show actions without changing the system |
@@ -80,17 +77,14 @@ Select **Hyprland** from your display manager.
 
 ## Packages
 
-### Core (`packages.txt`)
+Only rice-required packages are installed:
 
-Hyprland stack, waybar, rofi, swaync, matugen, awww, terminals, pipewire, fonts, …
+| File | Contents |
+|---|---|
+| `packages.txt` | Official: Hyprland, waybar, rofi, swaync, matugen, awww, kitty, ghostty, neovim, pipewire, fonts, … |
+| `packages-aur.txt` | AUR: `wlogout`, `waypaper-git`, `grimblast-git`, `bibata-cursor-theme` |
 
-### AUR (`packages-aur.txt`)
-
-`wlogout`, `waypaper-git`, `grimblast-git`, `bibata-cursor-theme`
-
-### Optional (`packages-optional.txt`)
-
-Browser, Spotify, VS Code, AnyDesk, … — **not required**.
+Install your own browser, media apps, and IDEs separately.
 
 ## Keybindings
 
@@ -116,9 +110,8 @@ Browser, Spotify, VS Code, AnyDesk, … — **not required**.
 ```text
 hyprland_dotfiles/
 ├── install.sh              # Matrix installer
-├── packages.txt            # Official packages
-├── packages-aur.txt        # AUR packages
-├── packages-optional.txt   # Optional personal apps
+├── packages.txt            # Official packages (rice only)
+├── packages-aur.txt        # AUR packages (rice only)
 ├── wallpapers/             # Bundled wallpapers (default.jpg, …)
 ├── assets/                 # Avatar and static assets
 ├── config/                 # ~/.config/* trees

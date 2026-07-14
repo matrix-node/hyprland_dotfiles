@@ -1,8 +1,8 @@
-# Official Arch packages — Matrix Hyprland rice (core)
+# Official Arch packages required for the Matrix Hyprland rice.
 # One package per line. Comments and blank lines are ignored.
-# Installer continues on individual failures.
+# No personal apps (browsers, spotify, editors beyond rice defaults, etc.).
 
-# Core compositor stack
+# Compositor stack
 hyprland
 hyprlock
 hypridle
@@ -12,7 +12,7 @@ xdg-desktop-portal
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 
-# Bar / launcher / notifications
+# Bar / launcher / notifications / logout helpers
 waybar
 rofi
 swaync
@@ -24,9 +24,8 @@ nwg-look
 qt5ct
 qt6ct
 imagemagick
-quickshell
 
-# Terminals / editors
+# Terminals / editors (shipped configs)
 kitty
 ghostty
 neovim
@@ -52,7 +51,7 @@ wl-clipboard
 grim
 slurp
 
-# Utilities
+# Desktop utilities used by binds / bar / scripts
 brightnessctl
 jq
 btop
