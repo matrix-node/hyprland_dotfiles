@@ -18,6 +18,8 @@
 }
 
 #network.disabled,
+#custom-network.disabled,
+#custom-network.disconnected,
 #cpu.critical,
 #disk.critical,
 #memory.critical,

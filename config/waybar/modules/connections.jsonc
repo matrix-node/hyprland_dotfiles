@@ -1,23 +1,11 @@
 {
-  "network": {
-    "format-wifi": "{icon}",
-    "format-ethernet": "",
-    "format-linked": "󱘖",
-    "format-disconnected": "󰤣",
-    "format-disabled": "󰤮",
-    "format-icons": [
-      "󰤯",
-      "󰤟",
-      "󰤢",
-      "󰤥",
-      "󰤨"
-    ],
-    "tooltip-format-disconnected": "No Connection",
-    "tooltip-format-disabled": "Wi-Fi is OFF",
-    "tooltip-format-wifi": "󱄙  {essid} ({signalStrength}%)\n\n󰐻  Freq: {frequency}GHz\n  {bandwidthDownBytes}   {bandwidthUpBytes}",
-    "tooltip-format-ethernet": "󰈀  {ifname} (Connected)\n  {bandwidthDownBytes}   {bandwidthUpBytes}",
-    "tooltip-format-linked": "󱘖 {ifname}: No IP Address",
+  "custom/network": {
+    "exec": "~/.config/waybar/scripts/network-status.sh",
+    "return-type": "json",
+    "interval": 2,
+    "tooltip": true,
     "on-click": "~/.config/waybar/scripts/wifi-menu",
+    "on-click-right": "~/.config/waybar/scripts/network-status.sh toggle-vpn",
     "on-scroll-up": "nmcli radio wifi on",
     "on-scroll-down": "nmcli radio wifi off"
   },

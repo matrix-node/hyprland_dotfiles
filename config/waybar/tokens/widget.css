@@ -123,8 +123,14 @@
   padding: 0 8px;
 }
 
-#network {
+#network,
+#custom-network {
   padding: 0px 10px 0px 4px;
+}
+
+/* WireGuard takes the network logo slot when the tunnel is up */
+#custom-network.vpn {
+  color: @primary;
 }
 
 #pulseaudio {

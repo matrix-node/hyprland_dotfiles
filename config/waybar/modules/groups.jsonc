@@ -48,7 +48,7 @@
       "transition-left-to-right": false
     },
     "modules": [
-      "network",
+      "custom/network",
       "bluetooth"
     ]
   },
