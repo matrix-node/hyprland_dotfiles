@@ -15,23 +15,26 @@ A fully themed **Arch Linux** Hyprland rice powered by [matugen](https://github.
 - **Resilient installer** — package failures never abort the whole install
 - **Hyprlock** — blur lock screen with time, date, and keyboard layout
 - **Wlogout** — glass-morphism logout menu with blurred background
-- **Waybar** — modular status bar (workspaces, tray, clock, audio, …)
+- **Waybar** — modular status bar (workspaces, VPN, network, tray, clock, audio, …)
 - **Rofi** — app launcher, WiFi, Bluetooth — themed with matugen
 - **Cava** — terminal audio visualizer with gradient colors
 - **GTK3 + GTK4 + Qt5 + Qt6** — consistent theming
 - **Neovim** — colorscheme generated from wallpaper
 ## Quick install
 
+One-liner (clone + install with defaults):
+
+```bash
+git clone https://github.com/matrix-node/hyprland_dotfiles.git ~/hyprland_dotfiles \
+  && cd ~/hyprland_dotfiles && ./install.sh --yes
+```
+
+Interactive:
+
 ```bash
 git clone https://github.com/matrix-node/hyprland_dotfiles.git ~/hyprland_dotfiles
 cd ~/hyprland_dotfiles
 ./install.sh
-```
-
-Fully automatic (default wallpaper):
-
-```bash
-./install.sh --yes
 ```
 
 Pick a bundled wallpaper by name:

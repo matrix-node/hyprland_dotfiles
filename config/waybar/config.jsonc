@@ -1,6 +1,6 @@
 /*
- * @author Muhammad Haikal Hakim
- * @repository https://github.com/haikal-hakim/athena
+ * Matrix Hyprland Dotfiles — Waybar
+ * https://github.com/matrix-node/hyprland_dotfiles
  */
 {
   "layer": "top",
@@ -17,9 +17,10 @@
     "./modules/system.jsonc",
     "./modules/power-profiles-daemon.jsonc",
     "./modules/workspace.jsonc",
-    "./modules/idle-ihibitor.jsonc",
+    "./modules/idle-inhibitor.jsonc",
     "./modules/audio.jsonc",
     "./modules/connections.jsonc",
+    "./modules/vpn.jsonc",
     "./modules/battery.jsonc",
     "./modules/clock.jsonc",
     "./modules/tray-notif.jsonc"
@@ -39,6 +40,7 @@
   ],
   "modules-right": [
     "group/audio",
+    "custom/vpn",
     "group/connections",
     "battery",
     "clock",

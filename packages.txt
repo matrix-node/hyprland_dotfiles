@@ -1,6 +1,7 @@
 # Official Arch packages required for the Matrix Hyprland rice.
 # One package per line. Comments and blank lines are ignored.
-# No personal apps (browsers, spotify, editors beyond rice defaults, etc.).
+# No personal apps (browsers, Spotify, IDEs beyond rice defaults, etc.).
+# Installer skips unknown/failed packages and continues.
 
 # Compositor stack
 hyprland
@@ -11,8 +12,9 @@ hyprpicker
 xdg-desktop-portal
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
+xdg-utils
 
-# Bar / launcher / notifications / logout helpers
+# Bar / launcher / notifications
 waybar
 rofi
 swaync
@@ -24,6 +26,7 @@ nwg-look
 qt5ct
 qt6ct
 imagemagick
+libnotify
 
 # Terminals / editors (shipped configs)
 kitty
@@ -45,15 +48,24 @@ pavucontrol
 playerctl
 cava
 
+# Network / Bluetooth (waybar modules + menus)
+networkmanager
+network-manager-applet
+bluez
+bluez-utils
+
+# Power (waybar power-profiles-daemon module)
+power-profiles-daemon
+
 # Clipboard / screenshots
 cliphist
 wl-clipboard
 grim
 slurp
+jq
 
 # Desktop utilities used by binds / bar / scripts
 brightnessctl
-jq
 btop
 fastfetch
 nautilus
@@ -64,6 +76,6 @@ base-devel
 # Fonts
 ttf-jetbrains-mono-nerd
 ttf-nerd-fonts-symbols
-ttf-font-awesome
+otf-font-awesome
 noto-fonts
 noto-fonts-emoji

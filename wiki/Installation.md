@@ -43,7 +43,8 @@ cd ~/hyprland_dotfiles
 | 2 | AUR packages (`packages-aur.txt`) | Installs `yay` if needed; each failure skipped |
 | 3 | Config deploy | Backs up existing files as `*.bak.<timestamp>` |
 | 4 | Wallpapers | Copies `wallpapers/` → `~/Pictures/Wallpapers/`, applies default |
-| 5 | Services | Enables `hyprpolkitagent` / `hypridle` when available |
+| 5 | Services | Enables NetworkManager, bluetooth, `hyprpolkitagent` / `hypridle` when available |
+| 6 | Health check | Reports missing tools without failing the install |
 
 Only packages required by the rice are installed (no personal browsers/apps).  
 The installer **never aborts the whole run** because one package failed.

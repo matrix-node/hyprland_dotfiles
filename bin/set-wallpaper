@@ -1,8 +1,36 @@
 #!/usr/bin/env bash
-# Open wallpaper picker and apply colors via matugen
+# Open wallpaper picker (waypaper) with graceful fallbacks.
 
-set -euo pipefail
+set -uo pipefail
 
-# Launch waypaper GUI for wallpaper selection
-# waypaper's post_command will handle matugen color generation
-waypaper
+if command -v waypaper >/dev/null 2>&1; then
+    exec waypaper "$@"
+fi
+
+# Fallback: pick with rofi if waypaper is not installed
+wall_dir="${HOME}/Pictures/Wallpapers"
+if [[ ! -d "$wall_dir" ]]; then
+    wall_dir="${HOME}/hyprland_dotfiles/wallpapers"
+fi
+
+if command -v rofi >/dev/null 2>&1 && [[ -d "$wall_dir" ]]; then
+    choice="$(
+        find "$wall_dir" -maxdepth 1 -type f \
+            \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+            -printf '%f\n' 2>/dev/null | sort | rofi -dmenu -p "Wallpaper" 2>/dev/null || true
+    )"
+    if [[ -n "$choice" && -f "${wall_dir}/${choice}" ]]; then
+        if [[ -x "${HOME}/.local/bin/matugen-apply-colors" ]]; then
+            exec "${HOME}/.local/bin/matugen-apply-colors" "${wall_dir}/${choice}"
+        fi
+        if command -v awww >/dev/null 2>&1; then
+            awww img "${wall_dir}/${choice}" || true
+        fi
+        mkdir -p "${HOME}/.cache"
+        echo "${wall_dir}/${choice}" > "${HOME}/.cache/current-wallpaper"
+        exit 0
+    fi
+fi
+
+notify-send "Wallpaper" "waypaper not installed and no fallback available" 2>/dev/null || true
+exit 0

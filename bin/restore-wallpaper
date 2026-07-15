@@ -1,20 +1,36 @@
 #!/usr/bin/env bash
+# Restore last wallpaper on session start. Never aborts the session.
 
-set -euo pipefail
+set -uo pipefail
 
-[ -f "$HOME/.cache/current-wallpaper" ] || exit 0
+cache="${HOME}/.cache/current-wallpaper"
+[[ -f "$cache" ]] || exit 0
 
-wallpaper=$(cat "$HOME/.cache/current-wallpaper")
+wallpaper="$(cat "$cache" 2>/dev/null || true)"
+[[ -n "$wallpaper" && -f "$wallpaper" ]] || exit 0
 
-[ -f "$wallpaper" ] || exit 0
+# Prefer matugen-apply-colors if available (also sets awww)
+if [[ -x "${HOME}/.local/bin/matugen-apply-colors" ]]; then
+    "${HOME}/.local/bin/matugen-apply-colors" "$wallpaper" >/dev/null 2>&1 || true
+elif command -v matugen >/dev/null 2>&1; then
+    cfg="${HOME}/.config/matugen/config.toml"
+    [[ -f "$cfg" ]] || cfg=""
+    if [[ -n "$cfg" ]]; then
+        timeout 30s matugen image -c "$cfg" "$wallpaper" \
+            -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error \
+            >/dev/null 2>&1 || true
+    fi
+fi
 
-"$HOME/.local/bin/matugen-apply-colors" "$wallpaper"
+# Ensure wallpaper is visible even if matugen path failed
+if command -v awww >/dev/null 2>&1; then
+    for _ in $(seq 1 30); do
+        if timeout 1s awww img "$wallpaper" >/dev/null 2>&1; then
+            exit 0
+        fi
+        sleep 0.15
+    done
+    timeout 1s awww img "$wallpaper" >/dev/null 2>&1 || true
+fi
 
-for _ in $(seq 1 20); do
-	if timeout 1s awww img "$wallpaper" 2>/dev/null; then
-		exit 0
-	fi
-	sleep 0.1
-done
-
-timeout 1s awww img "$wallpaper" 2>/dev/null || true
+exit 0

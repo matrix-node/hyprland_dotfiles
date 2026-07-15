@@ -133,6 +133,23 @@
   color: @primary;
 }
 
+/* Dedicated VPN module */
+#custom-vpn {
+  margin: 4px 5px;
+  padding: 6px 12px;
+  background-color: @surface_container;
+  border-radius: 20px;
+  color: @outline;
+}
+
+#custom-vpn.connected {
+  color: @primary;
+}
+
+#custom-vpn.disconnected {
+  color: @outline;
+}
+
 #pulseaudio {
   margin-right: 12px;
   margin-left: 8px;

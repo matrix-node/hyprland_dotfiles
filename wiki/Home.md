@@ -30,7 +30,7 @@ This rice is the result of that philosophy. It's a reproducible, maintainable Ar
 | Hyprland | Window manager with animations and blur |
 | Hyprlock | Lock screen with blurred wallpaper and matugen colors |
 | Wlogout | Glass-morphism logout menu |
-| Waybar | Modular status bar |
+| Waybar | Modular status bar (workspaces, VPN, network, audio, …) |
 | Rofi | App launcher, WiFi menu, Bluetooth selector |
 | Cava | Terminal audio visualizer |
 | SwayNC | Notification center themed with matugen |

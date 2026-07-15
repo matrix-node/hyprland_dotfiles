@@ -1,6 +1,7 @@
 # AUR packages required for the Matrix Hyprland rice.
 # One package per line. Failures are non-fatal (logged and skipped).
 # No personal apps — only components the rice depends on.
+# Installer tries AUR helper first, then official repos as fallback.
 
 wlogout
 waypaper-git

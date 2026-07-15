@@ -2,17 +2,18 @@
 # ============================================================
 #  Matrix — Hyprland Dotfiles Installer
 # ============================================================
-#  Reproducible Arch Linux + Hyprland setup.
-#  Never aborts the whole install for a single package failure.
+#  Public-ready Arch Linux + Hyprland setup.
+#  A single package failure never aborts the whole install.
 # ============================================================
 
-# Don't use `set -e` — package failures must not kill the run.
+# Intentionally NOT using `set -e` — resilience over pedantry.
 set -uo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="${REPO_DIR}/.install-logs"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 LOG_FILE="${LOG_DIR}/install-${TIMESTAMP}.log"
+SUDO_KEEPALIVE_PID=""
 
 AUTOYES=false
 SKIP_PACKAGES=false
@@ -42,6 +43,13 @@ err()   { echo -e "${RED}[ERR]${NC}   $*" | tee -a "$LOG_FILE"; }
 step()  { echo -e "\n${BOLD}${CYAN}==>${NC}${BOLD} $*${NC}" | tee -a "$LOG_FILE"; }
 dim()   { echo -e "${DIM}$*${NC}" | tee -a "$LOG_FILE"; }
 
+cleanup() {
+    if [[ -n "${SUDO_KEEPALIVE_PID:-}" ]]; then
+        kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT
+
 # ---------- helpers ----------
 usage() {
     cat <<EOF
@@ -51,7 +59,7 @@ Usage: ./install.sh [options]
 
 Options:
   -y, --yes              Non-interactive (accept defaults)
-  --wallpaper PATH       Wallpaper to apply (file name under wallpapers/ or absolute path)
+  --wallpaper PATH       Wallpaper to apply (name under wallpapers/ or absolute path)
   --no-packages          Skip pacman package installation
   --no-aur               Skip AUR packages
   --no-wallpaper         Skip wallpaper setup
@@ -63,6 +71,7 @@ Examples:
   ./install.sh
   ./install.sh --yes
   ./install.sh --yes --wallpaper nordwall3.jpg
+  ./install.sh --yes --no-aur --wallpaper default.jpg
 EOF
 }
 
@@ -87,13 +96,17 @@ is_installed() {
     pacman -Q "$1" &>/dev/null
 }
 
+pkg_in_repos() {
+    # True if package exists in official sync DBs (or is already installed)
+    local pkg="$1"
+    is_installed "$pkg" && return 0
+    pacman -Si "$pkg" &>/dev/null
+}
+
 ensure_log() {
-    mkdir -p "$LOG_DIR"
+    mkdir -p "$LOG_DIR" 2>/dev/null || true
+    : >> "$LOG_FILE" 2>/dev/null || LOG_FILE="/tmp/matrix-install-${TIMESTAMP}.log"
     : >> "$LOG_FILE"
-    # Don't commit logs
-    if [[ ! -f "${REPO_DIR}/.gitignore" ]] || ! grep -q '\.install-logs' "${REPO_DIR}/.gitignore" 2>/dev/null; then
-        :
-    fi
 }
 
 # ---------- parse args ----------
@@ -101,7 +114,14 @@ parse_args() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -y|--yes) AUTOYES=true; shift ;;
-            --wallpaper) WALLPAPER_ARG="${2:-}"; shift 2 ;;
+            --wallpaper)
+                if [[ $# -lt 2 || "$2" == -* ]]; then
+                    err "--wallpaper requires a path/name"
+                    exit 1
+                fi
+                WALLPAPER_ARG="$2"
+                shift 2
+                ;;
             --no-packages) SKIP_PACKAGES=true; shift ;;
             --no-aur) SKIP_AUR=true; shift ;;
             --no-wallpaper) SKIP_WALLPAPER=true; shift ;;
@@ -135,13 +155,13 @@ check_system() {
     step "System checks"
 
     if [[ "$(id -u)" -eq 0 ]]; then
-        err "Do not run this installer as root. Run as your normal user (sudo will be used when needed)."
+        err "Do not run this installer as root. Run as your normal user (sudo is used when needed)."
         exit 1
     fi
 
     if ! have pacman; then
         err "This installer targets Arch Linux (pacman not found)."
-        err "On other distros, install packages manually from packages.txt and symlink configs."
+        err "On other distros: install packages from packages.txt manually, then re-run with --no-packages --no-aur"
         exit 1
     fi
     ok "Arch Linux (pacman) detected"
@@ -151,22 +171,27 @@ check_system() {
         exit 1
     fi
 
-    # Warm sudo cache early so later steps don't surprise the user
     if ! $DRY_RUN; then
         if ! sudo -v; then
             err "sudo authentication failed."
             exit 1
         fi
-        # Keep sudo alive during long installs
         ( while true; do sudo -n true; sleep 50; done ) 2>/dev/null &
         SUDO_KEEPALIVE_PID=$!
-        trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
     fi
 
     if ! have git; then
         warn "git not found — installing base tools..."
         $DRY_RUN || sudo pacman -Sy --needed --noconfirm git base-devel 2>&1 | tee -a "$LOG_FILE" || true
     fi
+
+    # Useful XDG dirs so bookmarks / screenshots never point nowhere
+    mkdir -p \
+        "$HOME/Downloads" "$HOME/Documents" "$HOME/Pictures" \
+        "$HOME/Pictures/Screenshots" "$HOME/Pictures/Wallpapers" \
+        "$HOME/Music" "$HOME/Videos" \
+        "$HOME/.local/bin" "$HOME/.cache" \
+        2>/dev/null || true
 
     ok "System checks passed"
 }
@@ -188,6 +213,11 @@ install_pacman_pkg() {
     if $DRY_RUN; then
         info "  [dry-run] would install: $pkg"
         return 0
+    fi
+    if ! pkg_in_repos "$pkg"; then
+        warn "  not found in repos (skipped): $pkg"
+        SKIPPED_PKGS+=("$pkg")
+        return 1
     fi
     if sudo pacman -S --needed --noconfirm "$pkg" >>"$LOG_FILE" 2>&1; then
         ok "  installed: $pkg"
@@ -211,13 +241,12 @@ install_aur_pkg() {
         info "  [dry-run] would install (AUR): $pkg"
         return 0
     fi
-    # Try AUR helper; some packages may land in official later
     if "$helper" -S --needed --noconfirm "$pkg" >>"$LOG_FILE" 2>&1; then
         ok "  installed (AUR): $pkg"
         INSTALLED_PKGS+=("$pkg")
         return 0
     fi
-    # Fallback: try official repos
+    # Fallback: package may have migrated to official repos
     if sudo pacman -S --needed --noconfirm "$pkg" >>"$LOG_FILE" 2>&1; then
         ok "  installed (official fallback): $pkg"
         INSTALLED_PKGS+=("$pkg")
@@ -240,7 +269,127 @@ batch_install_pacman() {
         return 0
     fi
 
-    # Prefer one bulk install (fast), then retry failures individually
+    local missing=()
+    local unknown=()
+    for pkg in "${pkgs[@]}"; do
+        if is_installed "$pkg"; then
+            dim "  already installed: $pkg"
+            INSTALLED_PKGS+=("$pkg")
+        elif pkg_in_repos "$pkg"; then
+            missing+=("$pkg")
+        else
+            warn "  unknown package (will skip): $pkg"
+            unknown+=("$pkg")
+            SKIPPED_PKGS+=("$pkg")
+        fi
+    done
+
+    if [[ ${#missing[@]} -eq 0 ]]; then
+        ok "All known packages already installed"
+        return 0
+    fi
+
+    info "Installing ${#missing[@]} package(s)..."
+    if $DRY_RUN; then
+        for p in "${missing[@]}"; do info "  [dry-run] $p"; done
+        return 0
+    fi
+
+    # Sync DB once
+    if ! sudo pacman -Sy --noconfirm >>"$LOG_FILE" 2>&1; then
+        warn "pacman -Sy had issues (continuing with existing DBs)"
+    fi
+
+    # Fast path: bulk install
+    if sudo pacman -S --needed --noconfirm "${missing[@]}" >>"$LOG_FILE" 2>&1; then
+        for p in "${missing[@]}"; do
+            INSTALLED_PKGS+=("$p")
+        done
+        ok "Bulk install succeeded (${#missing[@]} packages)"
+        return 0
+    fi
+
+    warn "Bulk install had failures — retrying package-by-package (safe mode)"
+    for p in "${missing[@]}"; do
+        install_pacman_pkg "$p" || true
+    done
+}
+
+ensure_aur_helper() {
+    # Sets global AUR_HELPER; returns 0 if available.
+    AUR_HELPER=""
+    for h in yay paru; do
+        if have "$h"; then
+            AUR_HELPER="$h"
+            ok "AUR helper: $AUR_HELPER"
+            return 0
+        fi
+    done
+
+    warn "No AUR helper found"
+    if ! confirm "Install yay (AUR helper)?" "Y"; then
+        warn "Skipping AUR packages"
+        return 1
+    fi
+
+    if $DRY_RUN; then
+        info "[dry-run] would install yay"
+        AUR_HELPER="yay"
+        return 0
+    fi
+
+    sudo pacman -S --needed --noconfirm git base-devel >>"$LOG_FILE" 2>&1 || true
+    local tmp
+    tmp="$(mktemp -d)"
+    local ok_clone=false
+    if git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$tmp/yay-bin" >>"$LOG_FILE" 2>&1; then
+        ok_clone=true
+        (
+            cd "$tmp/yay-bin" || exit 1
+            makepkg -si --noconfirm
+        ) >>"$LOG_FILE" 2>&1 || true
+    elif git clone --depth 1 https://aur.archlinux.org/yay.git "$tmp/yay" >>"$LOG_FILE" 2>&1; then
+        ok_clone=true
+        (
+            cd "$tmp/yay" || exit 1
+            makepkg -si --noconfirm
+        ) >>"$LOG_FILE" 2>&1 || true
+    fi
+    rm -rf "$tmp"
+    $ok_clone || warn "Could not clone yay from AUR"
+
+    if have yay; then
+        AUR_HELPER="yay"
+        ok "yay installed"
+        return 0
+    fi
+    warn "Could not install yay — AUR packages will be skipped"
+    return 1
+}
+
+install_aur_list() {
+    local file="$1"
+    local label="$2"
+    step "$label"
+
+    AUR_HELPER=""
+    ensure_aur_helper || true
+    local helper="${AUR_HELPER:-}"
+
+    if [[ -z "$helper" ]]; then
+        warn "No AUR helper — skipping $(basename "$file")"
+        while IFS= read -r p; do SKIPPED_PKGS+=("$p"); done < <(read_pkg_list "$file")
+        return 0
+    fi
+    ok "Using AUR helper: $helper"
+
+    local pkgs=()
+    mapfile -t pkgs < <(read_pkg_list "$file")
+    if [[ ${#pkgs[@]} -eq 0 ]]; then
+        warn "No AUR packages listed"
+        return 0
+    fi
+
     local missing=()
     for pkg in "${pkgs[@]}"; do
         if is_installed "$pkg"; then
@@ -252,102 +401,26 @@ batch_install_pacman() {
     done
 
     if [[ ${#missing[@]} -eq 0 ]]; then
-        ok "All packages already installed"
+        ok "All AUR packages already installed"
         return 0
     fi
 
-    info "Installing ${#missing[@]} package(s)..."
     if $DRY_RUN; then
-        for p in "${missing[@]}"; do info "  [dry-run] $p"; done
+        for p in "${missing[@]}"; do info "  [dry-run] AUR $p"; done
         return 0
     fi
 
-    # Sync DB once
-    sudo pacman -Sy --noconfirm >>"$LOG_FILE" 2>&1 || warn "pacman -Sy had issues (continuing)"
-
-    if sudo pacman -S --needed --noconfirm "${missing[@]}" >>"$LOG_FILE" 2>&1; then
-        for p in "${missing[@]}"; do
-            INSTALLED_PKGS+=("$p")
-        done
-        ok "Bulk install succeeded (${#missing[@]} packages)"
+    # Fast path: bulk AUR install
+    info "Installing ${#missing[@]} AUR package(s)..."
+    if "$helper" -S --needed --noconfirm "${missing[@]}" >>"$LOG_FILE" 2>&1; then
+        for p in "${missing[@]}"; do INSTALLED_PKGS+=("$p"); done
+        ok "Bulk AUR install succeeded"
         return 0
     fi
 
-    warn "Bulk install had failures — retrying package-by-package"
+    warn "Bulk AUR install had failures — retrying package-by-package"
     for p in "${missing[@]}"; do
-        install_pacman_pkg "$p" || true
-    done
-}
-
-ensure_aur_helper() {
-    local helper=""
-    for h in yay paru; do
-        if have "$h"; then
-            helper="$h"
-            break
-        fi
-    done
-
-    if [[ -n "$helper" ]]; then
-        ok "AUR helper: $helper"
-        echo "$helper"
-        return 0
-    fi
-
-    warn "No AUR helper found"
-    if ! confirm "Install yay (AUR helper)?" "Y"; then
-        warn "Skipping AUR packages"
-        echo ""
-        return 1
-    fi
-
-    if $DRY_RUN; then
-        info "[dry-run] would install yay"
-        echo "yay"
-        return 0
-    fi
-
-    sudo pacman -S --needed --noconfirm git base-devel >>"$LOG_FILE" 2>&1 || true
-    local tmp
-    tmp="$(mktemp -d)"
-    if git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$tmp/yay-bin" >>"$LOG_FILE" 2>&1 \
-        || git clone --depth 1 https://aur.archlinux.org/yay.git "$tmp/yay" >>"$LOG_FILE" 2>&1; then
-        local builddir
-        if [[ -d "$tmp/yay-bin" ]]; then builddir="$tmp/yay-bin"; else builddir="$tmp/yay"; fi
-        (
-            cd "$builddir"
-            makepkg -si --noconfirm
-        ) >>"$LOG_FILE" 2>&1 || true
-    fi
-    rm -rf "$tmp"
-
-    if have yay; then
-        ok "yay installed"
-        echo "yay"
-        return 0
-    fi
-    warn "Could not install yay — AUR packages will be skipped"
-    echo ""
-    return 1
-}
-
-install_aur_list() {
-    local file="$1"
-    local label="$2"
-    step "$label"
-
-    local helper
-    helper="$(ensure_aur_helper)" || helper=""
-    if [[ -z "$helper" ]]; then
-        warn "No AUR helper — skipping $(basename "$file")"
-        mapfile -t SKIPPED_PKGS < <(read_pkg_list "$file")
-        return 0
-    fi
-
-    local pkgs=()
-    mapfile -t pkgs < <(read_pkg_list "$file")
-    for pkg in "${pkgs[@]}"; do
-        install_aur_pkg "$pkg" "$helper" || true
+        install_aur_pkg "$p" "$helper" || true
     done
 }
 
@@ -355,12 +428,23 @@ install_aur_list() {
 backup_path() {
     local path="$1"
     if [[ -e "$path" || -L "$path" ]]; then
+        # Already points at our repo? leave it (symlink update is fine)
+        if [[ -L "$path" ]]; then
+            local target
+            target="$(readlink -f "$path" 2>/dev/null || true)"
+            if [[ -n "$target" && "$target" == "$REPO_DIR"* ]]; then
+                return 0
+            fi
+        fi
         local bak="${path}.bak.${TIMESTAMP}"
         if $DRY_RUN; then
             info "  [dry-run] backup $path → $bak"
             return 0
         fi
-        mv "$path" "$bak"
+        mv "$path" "$bak" 2>/dev/null || {
+            warn "  could not backup $path — trying overwrite"
+            rm -rf "$path" 2>/dev/null || true
+        }
         dim "  backed up → $bak"
     fi
 }
@@ -368,7 +452,7 @@ backup_path() {
 deploy_link_or_copy() {
     local src="$1"
     local dst="$2"
-    local mode="${3:-link}"  # link | copy | copy-subst
+    local mode="${3:-link}"
 
     if [[ ! -e "$src" ]]; then
         warn "Source missing, skip: $src"
@@ -386,7 +470,8 @@ deploy_link_or_copy() {
     case "$mode" in
         copy|copy-subst)
             if [[ -d "$src" ]]; then
-                cp -a "$src" "$dst"
+                mkdir -p "$dst"
+                cp -a "$src"/. "$dst"/
             else
                 cp -a "$src" "$dst"
             fi
@@ -401,6 +486,20 @@ deploy_link_or_copy() {
     ok "  ${mode}: $dst"
 }
 
+make_tree_executable() {
+    local root="$1"
+    [[ -d "$root" ]] || return 0
+    # Shell scripts and common helpers
+    find "$root" -type f \( -name '*.sh' -o -name '*-menu' -o -name '*-status.sh' -o -name '*-viz.sh' \) \
+        -exec chmod +x {} + 2>/dev/null || true
+    # Files with shebang
+    while IFS= read -r -d '' f; do
+        if head -n1 "$f" 2>/dev/null | grep -q '^#!'; then
+            chmod +x "$f" 2>/dev/null || true
+        fi
+    done < <(find "$root" -type f -print0 2>/dev/null)
+}
+
 deploy_configs() {
     step "Deploying configuration"
 
@@ -412,6 +511,13 @@ deploy_configs() {
         return 0
     fi
 
+    # Ensure scripts are executable in the repo before linking
+    make_tree_executable "$REPO_DIR/bin"
+    make_tree_executable "$REPO_DIR/config/waybar/scripts"
+    make_tree_executable "$REPO_DIR/config/hypr/scripts"
+    make_tree_executable "$REPO_DIR/config/wlogout"
+    make_tree_executable "$REPO_DIR/config/rofi"
+
     local config_dirs=(
         hypr wlogout waybar rofi cava gtk-3.0 gtk-4.0 qt5ct qt6ct
         matugen waypaper kitty ghostty btop swaync nvim fastfetch
@@ -419,20 +525,21 @@ deploy_configs() {
     )
 
     for dir in "${config_dirs[@]}"; do
+        [[ -e "$REPO_DIR/config/$dir" ]] || continue
         deploy_link_or_copy "$REPO_DIR/config/$dir" "$HOME/.config/$dir" "$mode"
     done
 
-    deploy_link_or_copy "$REPO_DIR/config/starship.toml" "$HOME/.config/starship.toml" "$mode"
+    if [[ -f "$REPO_DIR/config/starship.toml" ]]; then
+        deploy_link_or_copy "$REPO_DIR/config/starship.toml" "$HOME/.config/starship.toml" "$mode"
+    fi
 
-    # gtk-3.0 bookmarks need a per-user absolute path. Prefer a real copy of gtk-3.0
-    # (not a symlink) so we never write user-specific data into the shared repo.
     personalize_gtk3
 
     # Home shell configs
-    deploy_link_or_copy "$REPO_DIR/home/.zshrc" "$HOME/.zshrc" "$mode"
-    deploy_link_or_copy "$REPO_DIR/home/.bashrc" "$HOME/.bashrc" "$mode"
+    [[ -f "$REPO_DIR/home/.zshrc" ]] && deploy_link_or_copy "$REPO_DIR/home/.zshrc" "$HOME/.zshrc" "$mode"
+    [[ -f "$REPO_DIR/home/.bashrc" ]] && deploy_link_or_copy "$REPO_DIR/home/.bashrc" "$HOME/.bashrc" "$mode"
 
-    # Scripts
+    # Scripts → ~/.local/bin
     mkdir -p "$HOME/.local/bin"
     if [[ -d "$REPO_DIR/bin" ]]; then
         for script in "$REPO_DIR"/bin/*; do
@@ -448,13 +555,13 @@ deploy_configs() {
     if [[ -f "$REPO_DIR/assets/avatar.png" ]]; then
         if [[ ! -f "$HOME/.face" ]] || confirm "Install default lock-screen avatar to ~/.face?" "Y"; then
             if ! $DRY_RUN; then
-                cp -f "$REPO_DIR/assets/avatar.png" "$HOME/.face"
+                cp -f "$REPO_DIR/assets/avatar.png" "$HOME/.face" 2>/dev/null || true
                 ok "  installed ~/.face avatar"
             fi
         fi
     fi
 
-    # Ensure matugen output dirs exist
+    # Ensure matugen output dirs exist so first paint is not broken
     mkdir -p \
         "$HOME/.config/waybar/tokens" \
         "$HOME/.config/swaync/tokens" \
@@ -462,16 +569,25 @@ deploy_configs() {
         "$HOME/.config/qt5ct/colors" \
         "$HOME/.config/qt6ct/colors" \
         "$HOME/.config/hypr" \
+        "$HOME/.config/cava" \
         "$HOME/Pictures/Screenshots" \
         2>/dev/null || true
 
-    # Firefox profile chrome dir (best-effort)
-    patch_firefox_template
+    # Seed token CSS if missing (waybar still starts before first matugen run)
+    if [[ -d "$REPO_DIR/config/waybar/tokens" ]]; then
+        for f in "$REPO_DIR"/config/waybar/tokens/*; do
+            [[ -f "$f" ]] || continue
+            local base
+            base="$(basename "$f")"
+            if [[ ! -e "$HOME/.config/waybar/tokens/$base" ]]; then
+                $DRY_RUN || cp -n "$f" "$HOME/.config/waybar/tokens/$base" 2>/dev/null || true
+            fi
+        done
+    fi
 
-    # Patch qt color scheme paths to absolute HOME (qt5ct/qt6ct are picky)
+    patch_firefox_template
     patch_qt_paths
 
-    # environment.d is read by systemd --user
     if have systemctl; then
         systemctl --user import-environment PATH 2>/dev/null || true
     fi
@@ -489,10 +605,9 @@ personalize_gtk3() {
         return 0
     fi
 
-    # Always materialize gtk-3.0 as a real directory with substituted bookmarks
     local tmp
     tmp="$(mktemp -d)"
-    cp -a "$src/." "$tmp/"
+    cp -a "$src"/. "$tmp/" 2>/dev/null || true
     if [[ -f "$tmp/bookmarks" ]]; then
         sed -i "s|@HOME@|${HOME}|g; s|/home/matrix|${HOME}|g" "$tmp/bookmarks"
     else
@@ -507,7 +622,7 @@ personalize_gtk3() {
 
     backup_path "$dst"
     mkdir -p "$dst"
-    cp -a "$tmp/." "$dst/"
+    cp -a "$tmp"/. "$dst/"
     rm -rf "$tmp"
     ok "  copy: ~/.config/gtk-3.0 (personalized bookmarks)"
 }
@@ -515,14 +630,8 @@ personalize_gtk3() {
 patch_qt_paths() {
     $DRY_RUN && return 0
     for f in "$HOME/.config/qt5ct/qt5ct.conf" "$HOME/.config/qt6ct/qt6ct.conf"; do
-        # Follow symlink into repo — patch with absolute path for current user
         if [[ -f "$f" ]]; then
-            # If it's a symlink into the repo, rewrite using sed on the real file carefully.
-            # Prefer writing a small override isn't possible; expand ~ to $HOME in place.
-            # Only expand if path still contains ~
-            if grep -q 'color_scheme_path=~/' "$f" 2>/dev/null || grep -q 'color_scheme_path=/home/matrix' "$f" 2>/dev/null; then
-                # When symlink, editing changes the repo — use absolute $HOME so it works for this clone owner.
-                # For multi-user clones of the same repo path, users should use --copy.
+            if grep -qE 'color_scheme_path=(~/|/home/matrix)' "$f" 2>/dev/null; then
                 local real
                 real="$(readlink -f "$f" 2>/dev/null || echo "$f")"
                 sed -i "s|color_scheme_path=.*/.config/qt|color_scheme_path=${HOME}/.config/qt|g" "$real" 2>/dev/null || true
@@ -541,7 +650,6 @@ patch_firefox_template() {
 
     local profile_dir=""
     if [[ -f "$profiles_ini" ]]; then
-        # Prefer Default=1 profile path
         profile_dir="$(awk -F= '
             /^\[Profile/ { in_p=1; path=""; def=0 }
             in_p && /^Path=/ { path=$2 }
@@ -560,20 +668,17 @@ patch_firefox_template() {
         local chrome_dir="$HOME/.mozilla/firefox/${profile_dir}/chrome"
         mkdir -p "$chrome_dir"
         local out_path="${chrome_dir}/userChrome.css"
-        # Update matugen firefox output_path
         local real_cfg
         real_cfg="$(readlink -f "$matugen_cfg" 2>/dev/null || echo "$matugen_cfg")"
         if grep -q 'templates.firefox' "$real_cfg" 2>/dev/null; then
-            # Replace output_path under firefox template (simple line replace)
             sed -i "s|^output_path = \".*firefox.*userChrome.css\"|output_path = \"${out_path}\"|" "$real_cfg" 2>/dev/null || true
         fi
-        # Seed user.js if present
         if [[ -f "$REPO_DIR/browsers/firefox-user.js" ]]; then
             cp -f "$REPO_DIR/browsers/firefox-user.js" "$HOME/.mozilla/firefox/${profile_dir}/user.js" 2>/dev/null || true
         fi
         ok "  Firefox profile linked for matugen: $profile_dir"
     else
-        dim "  No Firefox profile found — browser theming will be skipped until Firefox is run once"
+        dim "  No Firefox profile found — browser theming skipped until Firefox is run once"
     fi
 }
 
@@ -585,7 +690,7 @@ list_repo_wallpapers() {
 }
 
 resolve_wallpaper() {
-    local arg="$1"
+    local arg="${1:-}"
     if [[ -z "$arg" ]]; then
         if [[ -f "$REPO_DIR/wallpapers/default.jpg" ]]; then
             echo "$REPO_DIR/wallpapers/default.jpg"
@@ -632,18 +737,16 @@ install_wallpapers() {
 
     info "Copying $count wallpaper(s) → $dest"
     if ! $DRY_RUN; then
-        # Copy without clobbering newer user files
         while IFS= read -r img; do
             local base
             base="$(basename "$img")"
             if [[ ! -f "$dest/$base" ]]; then
-                cp -n "$img" "$dest/$base" 2>/dev/null || cp "$img" "$dest/$base"
+                cp -n "$img" "$dest/$base" 2>/dev/null || cp "$img" "$dest/$base" 2>/dev/null || true
             fi
         done < <(list_repo_wallpapers)
         ok "Wallpapers installed to $dest"
     fi
 
-    # Choose wallpaper
     local chosen=""
     if [[ -n "$WALLPAPER_ARG" ]]; then
         chosen="$(resolve_wallpaper "$WALLPAPER_ARG")"
@@ -679,10 +782,9 @@ install_wallpapers() {
         return 0
     fi
 
-    # Ensure chosen is under dest for waypaper consistency
     local dest_file="$dest/$(basename "$chosen")"
     if [[ ! -f "$dest_file" ]] && ! $DRY_RUN; then
-        cp "$chosen" "$dest_file"
+        cp "$chosen" "$dest_file" 2>/dev/null || true
     fi
     [[ -f "$dest_file" ]] && chosen="$dest_file"
 
@@ -695,49 +797,50 @@ install_wallpapers() {
     mkdir -p "$HOME/.cache"
     echo "$chosen" > "$HOME/.cache/current-wallpaper"
 
-    # Update waypaper config wallpaper entry if present
+    # waypaper config
     local wp_cfg="$HOME/.config/waypaper/config.ini"
     if [[ -f "$wp_cfg" ]]; then
         local real_wp
         real_wp="$(readlink -f "$wp_cfg" 2>/dev/null || echo "$wp_cfg")"
-        # Best-effort: set wallpaper = path
         if grep -q '^wallpaper' "$real_wp" 2>/dev/null; then
-            # waypaper uses multi-line wallpaper keys sometimes; write a clean single entry
-            python3 - "$real_wp" "$chosen" <<'PY' 2>/dev/null || true
+            if have python3; then
+                python3 - "$real_wp" "$chosen" <<'PY' 2>/dev/null || true
 import sys, re
 path, wallpaper = sys.argv[1], sys.argv[2]
 with open(path) as f:
     text = f.read()
-# Replace first wallpaper assignment value
-text2, n = re.subn(
-    r'(?m)^(wallpaper\s*=\s*).*$',
-    r'\1' + wallpaper,
-    text,
-    count=1,
-)
+text2, n = re.subn(r'(?m)^(wallpaper\s*=\s*).*$', r'\1' + wallpaper, text, count=1)
 if n:
     with open(path, 'w') as f:
         f.write(text2)
 PY
+            else
+                sed -i "0,/^wallpaper.*/s|^wallpaper.*|wallpaper = ${chosen}|" "$real_wp" 2>/dev/null || true
+            fi
         fi
     fi
 
-    # Generate colors if matugen available
-    if have matugen || [[ -x "$HOME/.local/bin/matugen-apply-colors" ]]; then
-        if [[ -x "$HOME/.local/bin/matugen-apply-colors" ]]; then
-            "$HOME/.local/bin/matugen-apply-colors" "$chosen" >>"$LOG_FILE" 2>&1 || true
-        elif have matugen; then
-            local cfg="$HOME/.config/matugen/config.toml"
-            [[ -f "$cfg" ]] || cfg="$REPO_DIR/config/matugen/config.toml"
-            matugen image -c "$cfg" "$chosen" -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error >>"$LOG_FILE" 2>&1 || true
-        fi
+    # Colors
+    if [[ -x "$HOME/.local/bin/matugen-apply-colors" ]]; then
+        "$HOME/.local/bin/matugen-apply-colors" "$chosen" >>"$LOG_FILE" 2>&1 || true
         ok "Matugen colors generated from $(basename "$chosen")"
+    elif have matugen; then
+        local cfg="$HOME/.config/matugen/config.toml"
+        [[ -f "$cfg" ]] || cfg="$REPO_DIR/config/matugen/config.toml"
+        if [[ -f "$cfg" ]]; then
+            matugen image -c "$cfg" "$chosen" -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error >>"$LOG_FILE" 2>&1 || true
+            ok "Matugen colors generated from $(basename "$chosen")"
+        else
+            warn "matugen config missing — colors will generate on first wallpaper change"
+        fi
     else
         warn "matugen not available yet — colors will generate on first wallpaper change"
     fi
 
-    # Try to set live wallpaper if session is running
+    # Live wallpaper if session running
     if have awww && [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+        awww-daemon >/dev/null 2>&1 &
+        sleep 0.2
         awww img "$chosen" >>"$LOG_FILE" 2>&1 || true
     fi
 
@@ -746,22 +849,44 @@ PY
 
 # ---------- services ----------
 setup_services() {
-    step "User services"
+    step "Services"
 
-    if ! confirm "Enable hyprpolkitagent & hypridle user services?" "Y"; then
-        warn "Skipping services"
+    if $DRY_RUN; then
+        info "[dry-run] would enable NetworkManager, bluetooth, hyprpolkitagent, hypridle, power-profiles-daemon"
         return 0
     fi
 
-    if $DRY_RUN; then
-        info "[dry-run] would enable hyprpolkitagent hypridle"
+    # System services (best-effort — never abort)
+    if have systemctl; then
+        if is_installed networkmanager || is_installed NetworkManager; then
+            sudo systemctl enable --now NetworkManager.service >>"$LOG_FILE" 2>&1 \
+                && ok "NetworkManager enabled" \
+                || warn "Could not enable NetworkManager (may need manual setup)"
+        fi
+        if is_installed bluez; then
+            sudo systemctl enable --now bluetooth.service >>"$LOG_FILE" 2>&1 \
+                && ok "Bluetooth enabled" \
+                || warn "Could not enable bluetooth.service"
+        fi
+        if is_installed power-profiles-daemon; then
+            sudo systemctl enable --now power-profiles-daemon.service >>"$LOG_FILE" 2>&1 \
+                && ok "power-profiles-daemon enabled" \
+                || dim "power-profiles-daemon not enabled (optional)"
+        fi
+    fi
+
+    if ! confirm "Enable hyprpolkitagent & hypridle user services?" "Y"; then
+        warn "Skipping user services"
         return 0
     fi
 
     systemctl --user daemon-reload 2>/dev/null || true
-    systemctl --user enable --now hyprpolkitagent.service 2>>"$LOG_FILE" || warn "hyprpolkitagent service not available yet"
-    systemctl --user enable --now hypridle.service 2>>"$LOG_FILE" || warn "hypridle service not available yet (ok if started from Hyprland autostart)"
-    ok "User services configured"
+    systemctl --user enable --now hyprpolkitagent.service 2>>"$LOG_FILE" \
+        && ok "hyprpolkitagent enabled" \
+        || warn "hyprpolkitagent service not available yet (started from Hyprland autostart)"
+    systemctl --user enable --now hypridle.service 2>>"$LOG_FILE" \
+        && ok "hypridle enabled" \
+        || warn "hypridle service not available yet (ok if started from Hyprland autostart)"
 }
 
 # ---------- shell ----------
@@ -793,6 +918,50 @@ setup_shell() {
     fi
 }
 
+# ---------- health check ----------
+health_check() {
+    step "Health check"
+    local critical_ok=true
+    local optional_missing=()
+
+    for cmd in hyprland waybar; do
+        if have "$cmd"; then
+            ok "  $cmd present"
+        else
+            warn "  missing critical command: $cmd"
+            critical_ok=false
+        fi
+    done
+
+    for cmd in kitty rofi swaync matugen awww hyprlock hypridle; do
+        if have "$cmd"; then
+            dim "  optional ok: $cmd"
+        else
+            optional_missing+=("$cmd")
+        fi
+    done
+
+    if [[ ${#optional_missing[@]} -gt 0 ]]; then
+        warn "Optional tools not on PATH: ${optional_missing[*]}"
+        warn "Configs still work; install missing pieces later or re-run the installer."
+    fi
+
+    if [[ -f "$HOME/.cache/current-wallpaper" ]]; then
+        ok "  wallpaper cache set"
+    else
+        dim "  no wallpaper cache (skipped or --no-wallpaper)"
+    fi
+
+    if [[ -L "$HOME/.config/hypr" || -d "$HOME/.config/hypr" ]]; then
+        ok "  hypr config present"
+    else
+        warn "  hypr config missing — re-run without skipping deploy"
+        critical_ok=false
+    fi
+
+    $critical_ok && ok "Core health check passed" || warn "Some critical pieces are missing — see log"
+}
+
 # ---------- summary ----------
 print_summary() {
     step "Installation summary"
@@ -804,11 +973,16 @@ print_summary() {
     if [[ ${#FAILED_PKGS[@]} -gt 0 ]]; then
         echo ""
         echo -e "  ${YELLOW}Packages that need attention:${NC}"
-        # unique
         printf '    - %s\n' "$(printf '%s\n' "${FAILED_PKGS[@]}" | sort -u)"
         echo ""
         echo -e "  ${DIM}Re-run install later, or install manually. See the log for details.${NC}"
         echo -e "  ${DIM}Core configs still deploy even if some packages failed.${NC}"
+    fi
+
+    if [[ ${#SKIPPED_PKGS[@]} -gt 0 ]]; then
+        echo ""
+        echo -e "  ${YELLOW}Skipped (not in repos / no AUR helper):${NC}"
+        printf '    - %s\n' "$(printf '%s\n' "${SKIPPED_PKGS[@]}" | sort -u)"
     fi
 
     if [[ ${#WARNINGS[@]} -gt 0 ]]; then
@@ -821,6 +995,7 @@ print_summary() {
     echo "    1. Log out and back in (or reboot)"
     echo "    2. Select Hyprland from your display manager"
     echo "    3. Press Super+W to change wallpaper (colors auto-update)"
+    echo "    4. Install a browser of your choice if you do not have one yet"
     echo ""
     local wp
     wp="$(cat "$HOME/.cache/current-wallpaper" 2>/dev/null || true)"
@@ -839,6 +1014,7 @@ main() {
     if ! $AUTOYES; then
         echo -e "This will install the ${BOLD}Matrix${NC} Hyprland rice on Arch Linux."
         echo "Existing configs are backed up with a .bak.<timestamp> suffix."
+        echo "Package failures are logged and skipped — the install continues."
         echo ""
         if ! confirm "Continue?" "Y"; then
             info "Aborted by user."
@@ -870,6 +1046,7 @@ main() {
     install_wallpapers
     setup_services
     setup_shell
+    health_check
     print_summary
 }
 

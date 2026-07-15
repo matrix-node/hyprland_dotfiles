@@ -10,27 +10,27 @@
   },
   "custom/code": {
     "format": "󰨞",
-    "on-click": "code",
-    "tooltip": "VS Code"
+    "on-click": "sh -c 'command -v code >/dev/null && exec code || command -v nvim >/dev/null && exec kitty -e nvim || exec kitty'",
+    "tooltip": "Editor"
   },
   "custom/files": {
     "format": "",
-    "on-click": "nautilus",
-    "tooltip": "Files (Nautilus)"
+    "on-click": "sh -c 'command -v nautilus >/dev/null && exec nautilus || command -v thunar >/dev/null && exec thunar || command -v dolphin >/dev/null && exec dolphin || exec xdg-open ~'",
+    "tooltip": "Files"
   },
   "custom/spotify": {
     "format": "",
-    "on-click": "spotify",
-    "tooltip": "Spotify"
+    "on-click": "sh -c 'command -v spotify >/dev/null && exec spotify || command -v spotify-launcher >/dev/null && exec spotify-launcher || notify-send \"Spotify\" \"Not installed\" 2>/dev/null || true'",
+    "tooltip": "Spotify (optional)"
   },
   "custom/browser": {
-    "format": "",
-    "on-click": "brave-origin-nightly",
-    "tooltip": "Brave Origin Nightly"
+    "format": "󰈹",
+    "on-click": "sh -c 'command -v firefox >/dev/null && exec firefox || command -v brave >/dev/null && exec brave || command -v chromium >/dev/null && exec chromium || command -v google-chrome-stable >/dev/null && exec google-chrome-stable || xdg-open https://duckduckgo.com'",
+    "tooltip": "Browser"
   },
   "custom/browser2": {
-    "format": "󰈹",
-    "on-click": "firefox",
-    "tooltip": "Firefox"
+    "format": "",
+    "on-click": "sh -c 'command -v brave >/dev/null && exec brave || command -v chromium >/dev/null && exec chromium || command -v firefox >/dev/null && exec firefox || xdg-open https://duckduckgo.com'",
+    "tooltip": "Secondary browser"
   }
 }

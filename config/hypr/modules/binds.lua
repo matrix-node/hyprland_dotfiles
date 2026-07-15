@@ -2,18 +2,19 @@
 ---- MY PROGRAMS ----
 ---------------------
 
--- Single source of truth for apps (keep waybar modules/distro.jsonc in sync)
+-- Single source of truth for apps (keep waybar modules/distro.jsonc in sync).
+-- Portable fallbacks so a missing personal browser never breaks keybinds.
 local home = os.getenv("HOME") or ""
 local apps = {
 	terminal = "kitty",
-	editor = "code",
-	fileManager = "nautilus",
-	browser = "brave-origin-nightly",
-	browser2 = "firefox",
-	music = "spotify",
-	netflix = "brave-origin-nightly --app=https://www.netflix.com",
+	editor = "sh -c 'command -v code >/dev/null && exec code || command -v nvim >/dev/null && exec kitty -e nvim || exec kitty'",
+	fileManager = "sh -c 'command -v nautilus >/dev/null && exec nautilus || command -v thunar >/dev/null && exec thunar || exec xdg-open ~'",
+	browser = "sh -c 'command -v firefox >/dev/null && exec firefox || command -v brave >/dev/null && exec brave || command -v chromium >/dev/null && exec chromium || xdg-open https://duckduckgo.com'",
+	browser2 = "sh -c 'command -v brave >/dev/null && exec brave || command -v chromium >/dev/null && exec chromium || command -v firefox >/dev/null && exec firefox || xdg-open https://duckduckgo.com'",
+	music = "sh -c 'command -v spotify >/dev/null && exec spotify || command -v spotify-launcher >/dev/null && exec spotify-launcher || notify-send Spotify \"Not installed\" 2>/dev/null || true'",
+	netflix = "sh -c 'xdg-open https://www.netflix.com'",
 	menu = home .. "/.config/rofi/type-2/launcher.sh",
-	virtualMachine = "virt-manager",
+	virtualMachine = "sh -c 'command -v virt-manager >/dev/null && exec virt-manager || notify-send Virt-Manager \"Not installed\" 2>/dev/null || true'",
 	cliphist = home .. "/.local/bin/cliphist-picker pick",
 	wallpaper = home .. "/.local/bin/set-wallpaper",
 	waybarRestart = home .. "/.config/waybar/scripts/launch.sh",
@@ -50,7 +51,7 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 
 hl.bind(
 	secondMod .. " + M",
-	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")
+	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit")
 )
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
