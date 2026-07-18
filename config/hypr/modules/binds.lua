@@ -2,23 +2,21 @@
 ---- MY PROGRAMS ----
 ---------------------
 
--- Single source of truth for apps (keep waybar modules/distro.jsonc in sync).
--- Portable fallbacks so a missing personal browser never breaks keybinds.
-local home = os.getenv("HOME") or ""
+-- Single source of truth for apps (keep waybar modules/distro.jsonc in sync)
 local apps = {
 	terminal = "kitty",
-	editor = "sh -c 'command -v code >/dev/null && exec code || command -v nvim >/dev/null && exec kitty -e nvim || exec kitty'",
-	fileManager = "sh -c 'command -v nautilus >/dev/null && exec nautilus || command -v thunar >/dev/null && exec thunar || exec xdg-open ~'",
-	browser = "sh -c 'command -v firefox >/dev/null && exec firefox || command -v brave >/dev/null && exec brave || command -v chromium >/dev/null && exec chromium || xdg-open https://duckduckgo.com'",
-	browser2 = "sh -c 'command -v brave >/dev/null && exec brave || command -v chromium >/dev/null && exec chromium || command -v firefox >/dev/null && exec firefox || xdg-open https://duckduckgo.com'",
-	music = "sh -c 'command -v spotify >/dev/null && exec spotify || command -v spotify-launcher >/dev/null && exec spotify-launcher || notify-send Spotify \"Not installed\" 2>/dev/null || true'",
-	netflix = "sh -c 'xdg-open https://www.netflix.com'",
-	menu = home .. "/.config/rofi/type-2/launcher.sh",
-	virtualMachine = "sh -c 'command -v virt-manager >/dev/null && exec virt-manager || notify-send Virt-Manager \"Not installed\" 2>/dev/null || true'",
-	cliphist = home .. "/.local/bin/cliphist-picker pick",
-	wallpaper = home .. "/.local/bin/set-wallpaper",
-	waybarRestart = home .. "/.config/waybar/scripts/launch.sh",
-	wlogout = home .. "/.config/wlogout/wlogout-launch.sh",
+	editor = "code",
+	fileManager = "nautilus",
+	browser = "brave-origin-nightly",
+	browser2 = "firefox",
+	music = "spotify",
+	netflix = "brave-origin-nightly --app=https://www.netflix.com",
+	menu = "/home/matrix/.config/rofi/type-2/launcher.sh",
+	virtualMachine = "virt-manager",
+	cliphist = "/home/matrix/.local/bin/cliphist-picker pick",
+	wallpaper = "/home/matrix/.local/bin/set-wallpaper",
+	waybarRestart = "/home/matrix/.config/waybar/scripts/launch.sh",
+	wlogout = "/home/matrix/.config/wlogout/wlogout-launch.sh",
 	screenshotDir = "~/Pictures/Screenshots",
 }
 
@@ -33,16 +31,16 @@ local secondMod = "SUPER + SHIFT"
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd(apps.netflix))
 hl.bind(secondMod .. " + V", hl.dsp.exec_cmd(apps.virtualMachine)) -- Super+Shift+V → virt-manager
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(apps.terminal))
-hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(apps.fileManager))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(apps.fileManager))
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(apps.browser))
 hl.bind(secondMod .. " + B", hl.dsp.exec_cmd(apps.browser2))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(apps.music))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(apps.editor))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(apps.waybarRestart))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(apps.menu))
--- Clipboard history: Super+Alt+V (avoids clash with Super+Shift+V = virt-manager)
-hl.bind(mainMod .. " + ALT + V", hl.dsp.exec_cmd(apps.cliphist))
+-- Clipboard history: Super+V
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(apps.cliphist))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock --immediate-render"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(apps.wallpaper))
 hl.bind(secondMod .. " + L", hl.dsp.exec_cmd(apps.wlogout))
@@ -53,7 +51,7 @@ hl.bind(
 	secondMod .. " + M",
 	hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit")
 )
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(secondMod .. " + Space", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 -- Master layout: cycle master orientation (was dwindle-only togglesplit)
 hl.bind(mainMod .. " + J", hl.dsp.layout("orientationnext"))
@@ -80,14 +78,16 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
--- Move/resize windows with mainMod + LMB/RMB and dragging
-hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
-hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+-- Move/resize windows using keyboard (since mouse bindm is broken in the lua plugin)
+hl.bind(mainMod .. " + ALT + right", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 20 0"), { repeating = true })
+hl.bind(mainMod .. " + ALT + left", hl.dsp.exec_cmd("hyprctl dispatch resizeactive -20 0"), { repeating = true })
+hl.bind(mainMod .. " + ALT + up", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 0 -20"), { repeating = true })
+hl.bind(mainMod .. " + ALT + down", hl.dsp.exec_cmd("hyprctl dispatch resizeactive 0 20"), { repeating = true })
 
 -- Screenshots (grimblast)
 hl.bind(
 	"PRINT",
-	hl.dsp.exec_cmd("grimblast --notify save area " .. apps.screenshotDir .. "/$(date +%F-%T).png")
+	hl.dsp.exec_cmd("grimblast --notify copysave area " .. apps.screenshotDir .. "/$(date +%F-%T).png")
 )
 hl.bind(secondMod .. " + PRINT", hl.dsp.exec_cmd("grimblast --notify copysave output"))
 
