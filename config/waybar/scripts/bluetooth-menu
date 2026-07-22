@@ -5,16 +5,17 @@ ROFI_THEME="$HOME/.config/rofi/dmenu.rasi"
 FONT="JetBrainsMono Nerd Font 10"
 
 bluetoothctl scan on >/dev/null 2>&1 &
+SCAN_PID=$!
 sleep 2
 
 device=$(bluetoothctl devices \
 | cut -d' ' -f3- \
 | rofi -dmenu -theme "$ROFI_THEME" -p "Bluetooth" -font "$FONT")
 
-pkill -f "bluetoothctl scan"
+kill "$SCAN_PID" 2>/dev/null || true
 
 [ -z "$device" ] && exit
 
-mac=$(bluetoothctl devices | grep "$device" | awk '{print $2}')
+mac=$(bluetoothctl devices | grep -F "$device" | awk '{print $2}')
 
-bluetoothctl connect "$mac"
+[ -n "$mac" ] && bluetoothctl connect "$mac"

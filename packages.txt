@@ -68,6 +68,7 @@ jq
 brightnessctl
 btop
 fastfetch
+eza
 nautilus
 polkit
 git

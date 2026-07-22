@@ -45,6 +45,11 @@ if command -v matugen &>/dev/null; then
         -m dark --type scheme-tonal-spot --prefer lightness --continue-on-error || true
 fi
 
+# Live wallpaper update if awww daemon is active
+if command -v awww &>/dev/null && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    run_quiet 2s awww img "$wallpaper"
+fi
+
 # Notify user (best-effort)
 if command -v notify-send &>/dev/null; then
     run_quiet 2s notify-send -i "$wallpaper" "Wallpaper & Colors Updated" "$(basename "$wallpaper")"

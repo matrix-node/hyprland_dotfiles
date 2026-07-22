@@ -21,7 +21,7 @@ if command -v rofi >/dev/null 2>&1 && [[ -d "$wall_dir" ]]; then
     )"
     if [[ -n "$choice" && -f "${wall_dir}/${choice}" ]]; then
         if [[ -x "${HOME}/.local/bin/matugen-apply-colors" ]]; then
-            exec "${HOME}/.local/bin/matugen-apply-colors" "${wall_dir}/${choice}"
+            "${HOME}/.local/bin/matugen-apply-colors" "${wall_dir}/${choice}"
         fi
         if command -v awww >/dev/null 2>&1; then
             awww img "${wall_dir}/${choice}" || true

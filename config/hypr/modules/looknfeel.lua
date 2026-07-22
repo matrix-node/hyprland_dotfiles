@@ -63,40 +63,46 @@ hl.config({
 	},
 })
 
--- Default curves and animations
+-- Curves
+-- classicIn  : hard settle on open (ease-out expo-ish) — arrives with weight
+-- classicOut : commits into the center on close (ease-in) — no soft linger
+-- overshoot  : tiny confident land for moves (not used on open/close)
 hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
-hl.curve("easeInCubic", { type = "bezier", points = { { 0.55, 0.055 }, { 0.675, 0.19 } } })
+hl.curve("classicIn", { type = "bezier", points = { { 0.16, 1 }, { 0.3, 1 } } })
+hl.curve("classicOut", { type = "bezier", points = { { 0.7, 0 }, { 0.84, 0 } } })
 hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })
 hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 } } })
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 
--- Default springs
-hl.curve("easy", { type = "spring", mass = 1, stiffness = 71.2633, dampening = 15.8273644 })
+-- Default springs (moves / drag — buttery, not bouncy)
+hl.curve("easy", { type = "spring", mass = 1, stiffness = 88, dampening = 18 })
 
-hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
-hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
-hl.animation({ leaf = "windows", enabled = true, speed = 4.79, spring = "easy" })
+hl.animation({ leaf = "global", enabled = true, speed = 8, bezier = "classicIn" })
+hl.animation({ leaf = "border", enabled = true, speed = 4.5, bezier = "classicIn" })
+hl.animation({ leaf = "windows", enabled = true, speed = 4.2, spring = "easy" })
 
--- Open: grow from center (popin 0% = start as a point, expand to full size)
+-- Open: grow from center — solid seed (15%), slow enough to read (~700ms)
+--   speed is in ds (1 = 100ms). Keep open a touch longer than close.
 hl.animation({
 	leaf = "windowsIn",
 	enabled = true,
-	speed = 4.2,
-	bezier = "easeOutQuint",
-	style = "popin 0%",
+	speed = 7.0,
+	bezier = "classicIn",
+	style = "popin 15%",
 })
--- Close: shrink toward center and vanish (paired with fadeOut below)
+-- Close: shrink to center and vanish (~600ms) — still decisive, but visible
 hl.animation({
 	leaf = "windowsOut",
 	enabled = true,
-	speed = 3.6,
-	bezier = "easeInCubic",
-	style = "popin 0%",
+	speed = 6.0,
+	bezier = "classicOut",
+	style = "popin 15%",
 })
 
-hl.animation({ leaf = "fadeIn", enabled = true, speed = 3.2, bezier = "easeOutQuint" })
-hl.animation({ leaf = "fadeOut", enabled = true, speed = 3.4, bezier = "easeInCubic" })
-hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
+-- Fade rides with the popin (same ballpark so scale + opacity stay readable)
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 6.5, bezier = "classicIn" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 5.5, bezier = "classicOut" })
+hl.animation({ leaf = "fade", enabled = true, speed = 5.0, bezier = "classicIn" })
 hl.animation({ leaf = "layers", enabled = true, speed = 3.81, bezier = "easeOutQuint" })
 hl.animation({ leaf = "layersIn", enabled = true, speed = 4, bezier = "easeOutQuint", style = "fade" })
 hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5, bezier = "linear", style = "fade" })

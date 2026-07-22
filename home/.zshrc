@@ -106,15 +106,22 @@ source $ZSH/oh-my-zsh.sh
 # - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-alias cc="hyprpicker -a"
-alias y="yay -S"
-alias p="sudo pacman -S"
-alias ls="exa -l --icons --group-directories-first --color=always"
+# Modern file list alias with eza/exa/ls fallback
+if command -v eza &>/dev/null; then
+  alias ls="eza -l --icons --group-directories-first --color=always"
+elif command -v exa &>/dev/null; then
+  alias ls="exa -l --icons --group-directories-first --color=always"
+else
+  alias ls="ls --color=auto"
+fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-alias clear=cl
+# Clear screen helper with fastfetch banner
+alias cl="clear && (fastfetch 2>/dev/null || true)"
 alias clear="cl"
+
+# Prompt initialization (Starship or Powerlevel10k fallback)
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+elif [[ -f ~/.p10k.zsh ]]; then
+  source ~/.p10k.zsh
+fi
