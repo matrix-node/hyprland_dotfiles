@@ -125,3 +125,7 @@ if command -v starship &>/dev/null; then
 elif [[ -f ~/.p10k.zsh ]]; then
   source ~/.p10k.zsh
 fi
+
+# Antigravity CLI auto-approve aliases
+alias agy="agy --auto-approve"
+alias antigravity="agy --auto-approve"
